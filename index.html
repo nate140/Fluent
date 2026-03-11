@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluent — Sharp your English</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+<meta property="og:title" content="Fluent — Sharp your English">
+<meta property="og:description" content="Apprends 4500+ mots anglais avec 6 modes de jeu adaptatifs.">
+<meta name="theme-color" content="#0066cc">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f3f0;
+    --surface: #fafaf8;
+    --surface2: #eeede9;
+    --border: rgba(30,20,10,0.08);
+    --border2: rgba(30,20,10,0.07);
+    --text: #1a1208;
+    --muted: #8c8070;
+    --A1: #00b894; --A2: #00bcd4;
+    --B1: #2563eb; --B2: #7c3aed; --C1: #db2777;
+    --red: #e55353; --yellow: #f0a500;
+    --green: #059669; --gold: #d97706;
+    --ocean: #2563eb; --coral: #f97316;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 0%, rgba(37,99,235,0.06) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 90% 100%, rgba(249,115,22,0.06) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(124,58,237,0.03) 0%, transparent 60%);
+  }
+
+  .screen { display: none; min-height: 100vh; position: relative; z-index: 1; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ══ LOGIN ══ */
+  #screen-login { align-items: center; justify-content: center; }
+  .login-card {
+    width: 90%; max-width: 400px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 28px; padding: 48px 36px; text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.03), 0 20px 60px rgba(0,0,0,0.08);
+    animation: fadeUp 0.5s ease;
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+  .logo-big { font-family: 'Bricolage Grotesque', sans-serif; font-size: 52px; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; line-height: 1; }
+  .logo-big .fl { color: var(--ocean); font-weight: 400; font-style: italic; }
+  .logo-big .ent { color: var(--text); font-weight: 800; }
+  .logo-tagline { color: var(--muted); font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 40px; font-family: 'DM Mono', monospace; }
+
+  .tabs { display: flex; background: var(--surface2); border-radius: 12px; padding: 4px; margin-bottom: 24px; }
+  .tab { flex:1; padding:9px; border:none; background:transparent; color:var(--muted); border-radius:9px; cursor:pointer; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; transition:all 0.2s; }
+  .tab.active { background:var(--surface); color:var(--text); box-shadow:0 1px 6px rgba(0,0,0,0.08); }
+
+  .input-group { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+  .wf-input {
+    background:var(--surface2); border:1.5px solid transparent;
+    border-radius:12px; padding:13px 16px; color:var(--text);
+    font-family:'Inter',sans-serif; font-size:15px;
+    outline:none; transition:all 0.2s; width:100%;
+  }
+  .wf-input:focus { border-color:var(--ocean); background:#fff; box-shadow:0 0 0 3px rgba(0,102,204,0.08); }
+  .wf-input::placeholder { color:var(--muted); }
+
+  .btn-primary {
+    width:100%; padding:14px; background:var(--text);
+    border:none; border-radius:12px; color:#fff;
+    font-family:'Inter',sans-serif; font-size:15px; font-weight:700;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .btn-primary:hover { background:#2d2010; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,102,204,0.22); }
+  .btn-primary:disabled { opacity:0.5; transform:none; box-shadow:none; }
+
+  .divider { display:flex; align-items:center; gap:10px; margin:16px 0; color:var(--muted); font-size:12px; }
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border2); }
+
+  .btn-guest { width:100%; padding:11px; background:transparent; border:1.5px solid var(--border2); border-radius:12px; color:var(--muted); font-family:'Inter',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; }
+  .btn-guest:hover { border-color:var(--ocean); color:var(--ocean); }
+
+  .login-hint { color:var(--muted); font-size:12px; margin-top:18px; line-height:1.7; }
+  .error-msg { color:var(--red); font-size:13px; margin-top:8px; min-height:18px; }
+
+  /* ══ PLACEMENT TEST ══ */
+  #screen-test { align-items:center; justify-content:center; padding:24px; }
+  .test-card { width:100%; max-width:520px; animation:fadeUp 0.5s ease; }
+  .test-header { text-align:center; margin-bottom:32px; }
+  .test-title { font-family:'Bricolage Grotesque',sans-serif; font-size:26px; font-weight:800; letter-spacing:-1px; margin-bottom:8px; }
+  .test-sub { color:var(--muted); font-size:14px; }
+  .test-progress-wrap { margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+  .test-progress-label { font-family:'DM Mono',monospace; font-size:12px; color:var(--muted); }
+  .test-progress { background:var(--border2); border-radius:4px; height:6px; margin-bottom:28px; overflow:hidden; }
+  .test-progress-fill { height:100%; background:var(--ocean); border-radius:4px; transition:width 0.4s ease; }
+  .test-word { font-family:'Bricolage Grotesque',sans-serif; font-size:48px; font-weight:800; text-align:center; margin-bottom:6px; letter-spacing:-2px; color:var(--text); }
+  .test-word-level { text-align:center; font-size:11px; letter-spacing:3px; color:var(--muted); margin-bottom:28px; text-transform:uppercase; font-family:'DM Mono',monospace; }
+  .test-speak { display:block; margin:0 auto 20px; background:transparent; border:1.5px solid var(--border2); border-radius:20px; padding:7px 18px; color:var(--muted); cursor:pointer; font-size:13px; transition:all 0.2s; font-family:'Inter',sans-serif; }
+  .test-speak:hover { border-color:var(--ocean); color:var(--ocean); }
+  .test-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .test-opt {
+    padding:16px; background:var(--surface); border:1.5px solid var(--border2);
+    border-radius:14px; color:var(--text); font-family:'Inter',sans-serif;
+    font-size:15px; font-weight:500; cursor:pointer; transition:all 0.15s; text-align:center;
+    box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  }
+  .test-opt:hover:not(:disabled) { border-color:var(--ocean); background:#fafcff; transform:translateY(-1px); }
+  .test-opt.correct { border-color:var(--green); background:rgba(0,184,148,0.06); color:var(--green); }
+  .test-opt.wrong   { border-color:var(--red);   background:rgba(229,83,83,0.06);   color:var(--red); }
+
+  /* ══ APP ══ */
+  #screen-app { flex-direction:column; }
+  .app-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; border-bottom:1px solid var(--border2);
+    background:rgba(244,243,240,0.95); backdrop-filter:blur(12px);
+    position:sticky; top:0; z-index:100;
+  }
+  .logo-small { font-family:'Bricolage Grotesque',sans-serif; font-size:22px; font-weight:800; letter-spacing:-1.5px; }
+  .logo-small .fl { color:var(--ocean); } .logo-small .ent { color:var(--text); }
+  .header-right { display:flex; align-items:center; gap:8px; }
+  .user-badge { font-family:'DM Mono',monospace; font-size:12px; color:var(--ocean); background:rgba(0,102,204,0.08); padding:5px 12px; border-radius:20px; letter-spacing:1px; font-weight:500; }
+  .icon-btn { background:transparent; border:1.5px solid var(--border2); border-radius:10px; padding:7px 12px; color:var(--muted); cursor:pointer; font-size:15px; transition:all 0.2s; }
+  .icon-btn:hover { color:var(--text); }
+
+  /* ══ MODE SELECTOR (big buttons) ══ */
+  .mode-selector {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:12px;
+    padding:16px; background:var(--surface); border-bottom:1px solid var(--border2);
+  }
+  .mode-btn {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:6px; padding:18px 10px;
+    background:var(--surface2); border:2px solid transparent;
+    border-radius:16px; cursor:pointer; transition:all 0.2s;
+    font-family:'Inter',sans-serif;
+  }
+  .mode-btn:hover { border-color:var(--ocean); background:#fafcff; transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,102,204,0.1); }
+  .mode-btn.active { background:var(--text); border-color:var(--text); color:#fff; box-shadow:0 6px 20px rgba(0,0,0,0.18); }
+  .mode-btn.active .mode-icon { filter:none; }
+  .mode-icon { font-size:28px; line-height:1; }
+  .mode-label { font-size:13px; font-weight:700; letter-spacing:0.3px; }
+  .mode-desc { font-size:11px; opacity:0.6; }
+
+  /* Bottom nav (Stats + Profil) */
+  .bottom-nav {
+    display:flex; gap:8px; padding:10px 16px 10px;
+    background:var(--surface); border-bottom:1px solid var(--border2);
+  }
+  .bottom-nav-btn {
+    flex:1; padding:9px; border:1.5px solid var(--border2); border-radius:12px;
+    background:transparent; color:var(--muted); font-family:'Inter',sans-serif;
+    font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s;
+  }
+  .bottom-nav-btn:hover { color:var(--text); border-color:rgba(0,102,204,0.2); }
+  .bottom-nav-btn.active { background:var(--surface2); color:var(--text); border-color:var(--ocean); }
+
+  /* Level filters */
+  .level-filters { display:flex; gap:6px; padding:12px 16px; overflow-x:auto; scrollbar-width:none; background:var(--bg); border-bottom:1px solid var(--border2); }
+  .level-filters::-webkit-scrollbar { display:none; }
+  .lvl-btn {
+    padding:5px 14px; border-radius:20px; border:1.5px solid transparent;
+    font-size:12px; font-weight:700; cursor:pointer; letter-spacing:1px;
+    transition:all 0.2s; white-space:nowrap; font-family:'DM Mono',monospace;
+  }
+  .lvl-btn.active { color:#fff; }
+  .lvl-btn.locked { opacity:0.35; cursor:not-allowed; }
+  .lvl-btn:not(.active):not(.locked) { background:var(--surface); color:var(--muted); border-color:var(--border2); }
+
+  /* Content */
+  .app-content { flex:1; padding:20px 16px; max-width:560px; width:100%; margin:0 auto; }
+
+  /* ── FLASHCARD ── */
+  .flashcard-wrap { display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .card-counter { color:var(--muted); font-size:13px; font-family:'DM Mono',monospace; letter-spacing:1px; }
+  .flashcard {
+    width:100%; background:var(--surface); border:1px solid var(--border);
+    border-radius:24px; padding:40px 28px; text-align:center;
+    box-shadow:0 2px 4px rgba(0,0,0,0.03), 0 12px 32px rgba(0,80,200,0.07);
+    transition:transform 0.2s;
+  }
+  .flashcard:hover { transform:translateY(-2px); }
+  .card-lvl-badge { font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; margin-bottom:18px; font-family:'DM Mono',monospace; }
+  .card-word { font-family:'Bricolage Grotesque',sans-serif; font-size:52px; font-weight:800; letter-spacing:-2px; margin-bottom:20px; line-height:1; color:var(--text); }
+  .speak-btn { background:transparent; border:1.5px solid var(--border2); border-radius:20px; padding:7px 18px; color:var(--muted); cursor:pointer; font-size:13px; transition:all 0.2s; margin-bottom:24px; font-family:'Inter',sans-serif; }
+  .speak-btn:hover { border-color:var(--ocean); color:var(--ocean); }
+  .reveal-btn { width:100%; padding:13px; background:rgba(0,102,204,0.07); border:1.5px solid rgba(0,102,204,0.15); border-radius:12px; color:var(--ocean); font-family:'Inter',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  .reveal-btn:hover { background:rgba(0,102,204,0.12); }
+  .card-translation { font-size:24px; color:var(--text); margin-bottom:28px; font-style:italic; animation:fadeUp 0.3s ease; opacity:0.75; }
+
+  .flash-actions { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width:100%; }
+  .flash-btn { padding:11px 6px; border:1.5px solid; border-radius:12px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s; text-align:center; line-height:1.5; background:var(--surface2); }
+  .flash-btn:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+  .flash-btn.again { border-color:rgba(229,83,83,0.3);  color:var(--red); }
+  .flash-btn.hard  { border-color:rgba(240,165,0,0.3);  color:var(--yellow); }
+  .flash-btn.good  { border-color:rgba(0,184,148,0.3);  color:var(--green); }
+  .flash-btn.easy  { border-color:rgba(0,102,204,0.3);  color:var(--ocean); }
+
+  /* ── QCM ── */
+  .qcm-wrap { display:flex; flex-direction:column; gap:16px; }
+  .qcm-card { background:var(--surface); border:1px solid var(--border2); border-radius:24px; padding:32px 24px; box-shadow:0 2px 4px rgba(0,0,0,0.03), 0 12px 32px rgba(0,80,200,0.06); }
+  .qcm-question { font-family:'Bricolage Grotesque',sans-serif; font-size:44px; font-weight:800; text-align:center; letter-spacing:-2px; margin-bottom:6px; }
+  .qcm-instruction { text-align:center; color:var(--muted); font-size:13px; margin-bottom:24px; }
+  .qcm-options { display:flex; flex-direction:column; gap:9px; }
+  .qcm-opt {
+    padding:14px 18px; background:var(--surface2); border:1.5px solid var(--border2);
+    border-radius:12px; color:var(--text); font-family:'Inter',sans-serif;
+    font-size:15px; font-weight:500; cursor:pointer; transition:all 0.15s; text-align:left;
+    display:flex; align-items:center; gap:12px;
+  }
+  .qcm-opt:hover:not(:disabled) { border-color:var(--ocean); background:#fafcff; transform:translateX(4px); }
+  .qcm-opt:disabled { cursor:default; }
+  .qcm-opt.correct { border-color:var(--green); background:rgba(0,184,148,0.06); color:var(--green); font-weight:600; }
+  .qcm-opt.wrong   { border-color:var(--red);   background:rgba(229,83,83,0.06);   color:var(--red); }
+  .qcm-letter { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); min-width:18px; }
+  .qcm-streak { text-align:center; font-family:'DM Mono',monospace; font-size:13px; color:var(--muted); }
+
+  /* ── DICTÉE ── */
+  .dictee-wrap { display:flex; flex-direction:column; gap:16px; }
+  .dictee-card { background:var(--surface); border:1px solid var(--border2); border-radius:24px; padding:36px 24px; text-align:center; box-shadow:0 2px 4px rgba(0,0,0,0.03), 0 12px 32px rgba(0,80,200,0.06); }
+  .dictee-icon { font-size:40px; margin-bottom:10px; }
+  .dictee-instruction { color:var(--muted); font-size:14px; margin-bottom:24px; line-height:1.7; }
+  .dictee-input {
+    width:100%; background:var(--surface2); border:2px solid var(--border2);
+    border-radius:14px; padding:15px 18px; color:var(--text);
+    font-family:'DM Mono',monospace; font-size:20px; letter-spacing:4px;
+    text-align:center; outline:none; transition:all 0.2s; margin-bottom:12px;
+  }
+  .dictee-input:focus { border-color:var(--ocean); background:#fff; box-shadow:0 0 0 3px rgba(0,102,204,0.08); }
+  .dictee-input.correct { border-color:var(--green); color:var(--green); }
+  .dictee-input.wrong   { border-color:var(--red);   color:var(--red);   animation:shake 0.3s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .dictee-hint { color:var(--muted); font-size:13px; min-height:20px; margin-bottom:16px; }
+  .btn-validate { width:100%; padding:13px; background:var(--ocean); border:none; border-radius:12px; color:#fff; font-family:'Inter',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+  .btn-validate:hover { background:#0052a3; transform:translateY(-1px); }
+  .btn-skip { width:100%; padding:9px; background:transparent; border:1.5px solid var(--border2); border-radius:12px; color:var(--muted); font-family:'Inter',sans-serif; font-size:13px; cursor:pointer; margin-top:8px; transition:all 0.2s; }
+  .btn-skip:hover { color:var(--text); }
+
+  /* ── SPRINT ── */
+  .sprint-wrap { display:flex; flex-direction:column; gap:16px; }
+  .sprint-header { display:flex; justify-content:space-between; align-items:center; }
+  .sprint-timer { font-family:'Bricolage Grotesque',sans-serif; font-size:36px; font-weight:800; color:var(--ocean); letter-spacing:-1px; }
+  .sprint-timer.urgent { color:var(--red); animation:pulse 0.5s infinite alternate; }
+  @keyframes pulse { from{opacity:1} to{opacity:0.4} }
+  .sprint-score-info { font-family:'DM Mono',monospace; font-size:13px; color:var(--muted); text-align:right; }
+  .sprint-card { background:var(--surface); border:1px solid var(--border2); border-radius:24px; padding:32px 24px; text-align:center; box-shadow:0 2px 4px rgba(0,0,0,0.03), 0 12px 32px rgba(0,80,200,0.06); }
+  .sprint-word { font-family:'Bricolage Grotesque',sans-serif; font-size:48px; font-weight:800; letter-spacing:-2px; margin-bottom:24px; }
+  .sprint-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .sprint-opt {
+    padding:13px; background:var(--surface2); border:1.5px solid var(--border2);
+    border-radius:12px; color:var(--text); font-size:14px; font-weight:500; cursor:pointer;
+    transition:all 0.1s; font-family:'Inter',sans-serif;
+  }
+  .sprint-opt:hover:not(:disabled) { border-color:var(--ocean); background:#fafcff; }
+  .sprint-opt.correct { border-color:var(--green); background:rgba(0,184,148,0.08); color:var(--green); font-weight:600; }
+  .sprint-opt.wrong   { border-color:var(--red);   background:rgba(229,83,83,0.08);   color:var(--red); }
+  .sprint-end { text-align:center; background:var(--surface); border:1px solid var(--border2); border-radius:24px; padding:48px 28px; animation:fadeUp 0.4s ease; }
+  .sprint-end-score { font-family:'Bricolage Grotesque',sans-serif; font-size:80px; font-weight:800; color:var(--ocean); margin-bottom:4px; letter-spacing:-4px; }
+  .sprint-end-label { color:var(--muted); font-size:14px; margin-bottom:28px; }
+
+  /* ── STATS ── */
+  .stats-wrap { display:flex; flex-direction:column; gap:16px; }
+  .stats-hero { background:var(--ocean); border-radius:24px; padding:32px; text-align:center; color:#fff; }
+  .stats-big { font-family:'Bricolage Grotesque',sans-serif; font-size:68px; font-weight:800; line-height:1; letter-spacing:-3px; }
+  .stats-big-label { font-size:14px; opacity:0.7; margin-top:4px; margin-bottom:16px; }
+  .stats-msg { background:rgba(255,255,255,0.12); border-radius:12px; padding:12px 16px; font-size:13px; line-height:1.6; text-align:left; }
+  .stats-chart-card, .stats-levels { background:var(--surface); border:1px solid var(--border2); border-radius:24px; padding:24px; }
+  .stats-section-title { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:18px; font-family:'DM Mono',monospace; }
+  .chart-wrap { display:flex; align-items:center; gap:24px; }
+  .chart-canvas-wrap { width:140px; height:140px; flex-shrink:0; }
+  .chart-legend { flex:1; display:flex; flex-direction:column; gap:10px; }
+  .legend-item { display:flex; align-items:center; gap:10px; font-size:13px; }
+  .legend-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .legend-label { color:var(--muted); flex:1; font-weight:500; }
+  .legend-val { font-family:'DM Mono',monospace; font-size:12px; color:var(--text); font-weight:600; }
+  .level-row { margin-bottom:14px; }
+  .level-row:last-child { margin-bottom:0; }
+  .level-row-header { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .level-tag { font-family:'DM Mono',monospace; font-size:11px; font-weight:700; padding:3px 10px; border-radius:6px; color:#fff; letter-spacing:1px; }
+  .level-row-counts { margin-left:auto; font-family:'DM Mono',monospace; font-size:12px; color:var(--muted); }
+  .bar-bg { background:var(--surface2); border-radius:4px; height:8px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; transition:width 1s cubic-bezier(0.4,0,0.2,1); }
+
+  /* ── PROFIL ── */
+  .profil-wrap { display:flex; flex-direction:column; gap:16px; }
+  .profil-hero { background:linear-gradient(135deg, var(--ocean), #3b82f6); border-radius:24px; padding:32px; color:#fff; text-align:center; }
+  .profil-avatar { font-size:48px; margin-bottom:12px; }
+  .profil-name { font-family:'Bricolage Grotesque',sans-serif; font-size:28px; font-weight:800; letter-spacing:-1px; margin-bottom:4px; }
+  .profil-level-badge { display:inline-block; background:rgba(255,255,255,0.2); border-radius:20px; padding:6px 18px; font-size:13px; font-weight:700; letter-spacing:2px; font-family:'DM Mono',monospace; margin-bottom:20px; }
+  .profil-stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .profil-stat { background:rgba(255,255,255,0.12); border-radius:14px; padding:14px 8px; }
+  .profil-stat-num { font-family:'Bricolage Grotesque',sans-serif; font-size:28px; font-weight:800; line-height:1; }
+  .profil-stat-label { font-size:11px; opacity:0.7; margin-top:4px; }
+
+  .profil-card { background:var(--surface); border:1px solid var(--border2); border-radius:24px; padding:24px; }
+  .profil-card-title { font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; font-family:'DM Mono',monospace; }
+  .profil-info-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border2); font-size:14px; }
+  .profil-info-row:last-child { border-bottom:none; }
+  .profil-info-label { color:var(--muted); font-weight:500; }
+  .profil-info-val { font-weight:600; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; }
+
+  .level-up-card { background:linear-gradient(135deg, rgba(0,184,148,0.08), rgba(0,102,204,0.06)); border:1.5px solid rgba(0,184,148,0.2); border-radius:20px; padding:20px; }
+  .level-up-title { font-weight:700; font-size:14px; margin-bottom:8px; color:var(--green); }
+  .level-up-text { color:var(--muted); font-size:13px; line-height:1.7; }
+  .level-up-bar-wrap { margin-top:14px; }
+  .level-up-label { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px; font-family:'DM Mono',monospace; }
+
+  .profil-explain { background:var(--surface2); border-radius:16px; padding:18px 20px; }
+  .profil-explain p { font-size:13px; color:var(--muted); line-height:1.8; margin-bottom:10px; }
+  .profil-explain p:last-child { margin-bottom:0; }
+  .profil-explain strong { color:var(--text); }
+
+  /* Locked level pill */
+  .locked-pill { display:inline-flex; align-items:center; gap:6px; background:var(--surface2); border:1px solid var(--border2); border-radius:20px; padding:4px 12px; font-size:12px; color:var(--muted); font-family:'DM Mono',monospace; }
+
+  /* UTILS */
+  .empty-state { text-align:center; padding:60px 20px; color:var(--muted); font-size:15px; line-height:2; }
+  .loading-dots { display:inline-flex; gap:6px; }
+  .loading-dots span { width:8px; height:8px; border-radius:50%; background:var(--ocean); opacity:0.3; animation:bounce 1s infinite; }
+  .loading-dots span:nth-child(2) { animation-delay:0.15s; }
+  .loading-dots span:nth-child(3) { animation-delay:0.3s; }
+  @keyframes bounce { 0%,100%{transform:translateY(0);opacity:0.3} 50%{transform:translateY(-6px);opacity:1} }
+
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--surface); border:1px solid var(--border2); border-radius:12px; padding:12px 24px; font-size:14px; font-weight:500; z-index:999; transition:transform 0.3s ease; white-space:nowrap; box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  .toast.success { border-color:rgba(0,184,148,0.3); color:var(--green); }
+  .toast.info    { border-color:rgba(0,102,204,0.3); color:var(--ocean); }
+  .toast.levelup { border-color:rgba(245,158,11,0.4); color:var(--gold); background:#fffbeb; }
+
+
+  /* ══ LANDING ══ */
+  #screen-landing { align-items:center; justify-content:flex-start; overflow-y:auto; }
+  .landing-wrap { width:100%; max-width:480px; margin:0 auto; padding:48px 24px 60px; }
+  .landing-logo { font-family:'Bricolage Grotesque',sans-serif; font-size:52px; font-weight:800; letter-spacing:-3px; margin-bottom:6px; }
+  .landing-logo .fl { color:var(--ocean); } .landing-logo .ent { color:var(--text); }
+  .landing-tagline { color:var(--muted); font-size:11px; letter-spacing:3px; text-transform:uppercase; margin-bottom:40px; }
+  .landing-headline { font-family:'Bricolage Grotesque',sans-serif; font-size:34px; font-weight:800; letter-spacing:-1.5px; line-height:1.15; margin-bottom:16px; }
+  .landing-headline span { color:var(--ocean); }
+  .landing-sub { color:var(--muted); font-size:15px; line-height:1.75; margin-bottom:32px; }
+  .landing-features { display:flex; flex-direction:column; gap:12px; margin-bottom:36px; }
+  .landing-feat { display:flex; align-items:center; gap:14px; background:var(--surface); border:1px solid var(--border2); border-radius:16px; padding:14px 18px; }
+  .landing-feat-icon { font-size:22px; flex-shrink:0; }
+  .landing-feat-text strong { display:block; font-weight:700; color:var(--text); font-size:13px; margin-bottom:2px; }
+  .landing-feat-text span { color:var(--muted); font-size:12px; }
+  .landing-cta { display:flex; flex-direction:column; gap:10px; }
+  .btn-landing-primary { width:100%; padding:16px; background:var(--ocean); border:none; border-radius:14px; color:#fff; font-family:'Inter',sans-serif; font-size:16px; font-weight:800; cursor:pointer; transition:all 0.2s; }
+  .btn-landing-primary:hover { background:#2d2010; transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,102,204,0.25); }
+  .btn-landing-secondary { width:100%; padding:13px; background:transparent; border:1.5px solid var(--border2); border-radius:14px; color:var(--muted); font-family:'Inter',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  .btn-landing-secondary:hover { color:var(--text); border-color:rgba(0,102,204,0.25); }
+  .landing-proof { text-align:center; font-size:12px; color:var(--muted); margin-top:18px; line-height:1.8; }
+
+  /* ══ STREAK ══ */
+  .streak-badge { display:inline-flex; align-items:center; gap:5px; background:linear-gradient(135deg,#ff6b2b,#f0a500); border-radius:20px; padding:4px 10px 4px 8px; font-size:12px; font-weight:700; color:#fff; font-family:'DM Mono',monospace; cursor:default; }
+  .streak-badge.zero { background:var(--surface2); color:var(--muted); }
+
+  /* ══ RETOURNEMENT ══ */
+  .retour-fr { font-family:'Bricolage Grotesque',sans-serif; font-size:44px; font-weight:800; text-align:center; letter-spacing:-2px; margin-bottom:6px; }
+  .retour-label { text-align:center; color:var(--muted); font-size:13px; margin-bottom:24px; }
+
+  /* ══ SHARE ══ */
+  .share-card { background:linear-gradient(135deg,#0066cc,#6c5ce7); border-radius:24px; padding:32px 24px; text-align:center; color:#fff; margin-bottom:4px; }
+  .share-title-lbl { font-size:11px; letter-spacing:3px; text-transform:uppercase; opacity:0.7; margin-bottom:10px; font-family:'DM Mono',monospace; }
+  .share-big { font-family:'Bricolage Grotesque',sans-serif; font-size:56px; font-weight:800; letter-spacing:-2px; line-height:1; }
+  .share-sub { font-size:14px; opacity:0.8; margin-top:4px; margin-bottom:16px; }
+  .share-lvl-badge { display:inline-block; background:rgba(255,255,255,0.18); border-radius:20px; padding:5px 16px; font-size:13px; font-weight:700; letter-spacing:1.5px; font-family:'DM Mono',monospace; margin-bottom:8px; }
+  .share-url-txt { font-size:11px; opacity:0.45; font-family:'DM Mono',monospace; }
+  .share-actions { display:flex; gap:10px; margin-top:14px; }
+  .btn-share { flex:1; padding:13px; border:none; border-radius:12px; font-family:'Inter',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+  .btn-share-primary { background:var(--ocean); color:#fff; }
+  .btn-share-primary:hover { background:#0052a3; }
+  .btn-share-secondary { background:var(--surface2); color:var(--text); border:1.5px solid var(--border2); }
+  .btn-share-secondary:hover { border-color:var(--ocean); }
+
+  @media (max-width:480px) {
+    .login-card { padding:36px 20px; }
+    .card-word, .qcm-question, .sprint-word, .retour-fr { font-size:34px; }
+    .flash-actions { grid-template-columns:repeat(2,1fr); }
+    .chart-wrap { flex-direction:column; align-items:center; }
+    .chart-canvas-wrap { width:120px; height:120px; }
+    .stats-big { font-size:56px; }
+    .landing-headline { font-size:28px; }
+    .share-big { font-size:44px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ LANDING ══ -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-wrap">
+    <div class="landing-logo"><span class="fl">Fl</span><span class="ent">uent</span></div>
+    <div class="landing-tagline">Sharp your English</div>
+    <div class="landing-hero">
+      <div class="landing-headline">Apprends l'anglais<br>comme un <em>jeu</em>.</div>
+      <p class="landing-sub">
+        4 500+ mots couvrant tous les niveaux CEFR (A1→C1). Un test de placement, 
+        6 modes de jeu adaptatifs, et un système qui s'adapte à ce que tu sais déjà.
+      </p>
+      <div class="landing-features">
+        <div class="landing-feat">
+          <span class="landing-feat-icon">🎯</span>
+          <div class="landing-feat-text">
+            <strong>Test de placement intelligent</strong>
+            <span>40 questions pour trouver ton niveau exact et sauter ce que tu connais déjà.</span>
+          </div>
+        </div>
+        <div class="landing-feat">
+          <span class="landing-feat-icon">🔥</span>
+          <div class="landing-feat-text">
+            <strong>Streak quotidien</strong>
+            <span>Reviens chaque jour pour ne pas casser ta série. La régularité, c'est tout.</span>
+          </div>
+        </div>
+        <div class="landing-feat">
+          <span class="landing-feat-icon">⚡</span>
+          <div class="landing-feat-text">
+            <strong>6 modes de jeu</strong>
+            <span>Flashcard, QCM, Dictée, Saisie libre, Retournement, Sprint. Jamais monotone.</span>
+          </div>
+        </div>
+        <div class="landing-feat">
+          <span class="landing-feat-icon">🚀</span>
+          <div class="landing-feat-text">
+            <strong>Level-up automatique</strong>
+            <span>Valide 90% d'un niveau et le suivant se déverrouille sans intervention.</span>
+          </div>
+        </div>
+      </div>
+      <div class="landing-cta">
+        <button class="btn-landing-primary" onclick="showScreen('login');document.getElementById('login-error').textContent=''">Créer un compte gratuit →</button>
+        <button class="btn-landing-secondary" onclick="handleGuest()">Tester sans compte</button>
+      </div>
+      <p class="landing-proof">Gratuit · Sans pub · Tes données restent les tiennes</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div id="screen-login" class="screen">
+  <div class="login-card">
+    <div class="logo-big"><span class="fl">Fl</span><span class="ent">uent</span></div>
+    <div class="logo-tagline">Sharp your English</div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Connexion</button>
+      <button class="tab" onclick="switchTab('register')">Inscription</button>
+    </div>
+    <div id="tab-login">
+      <div class="input-group">
+        <input class="wf-input" id="login-id" placeholder="Identifiant" autocomplete="username">
+        <input class="wf-input" id="login-pwd" type="password" placeholder="Mot de passe" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" id="btn-login" onclick="handleLogin()">Se connecter →</button>
+      <div class="divider">ou</div>
+      <button class="btn-guest" onclick="handleGuest()">Tester sans compte</button>
+    </div>
+    <div id="tab-register" style="display:none">
+      <div class="input-group">
+        <input class="wf-input" id="reg-id" placeholder="Choisis un identifiant">
+        <input class="wf-input" id="reg-pwd" type="password" placeholder="Mot de passe">
+        <input class="wf-input" id="reg-pwd2" type="password" placeholder="Confirme le mot de passe">
+      </div>
+      <button class="btn-primary" id="btn-register" onclick="handleRegister()">Créer mon compte →</button>
+    </div>
+    <div class="error-msg" id="login-error"></div>
+    <p class="login-hint">Mode invité : ta progression ne sera pas sauvegardée.</p>
+    <p style="margin-top:16px;"><button onclick="showScreen('landing')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">← Retour à l'accueil</button></p>
+  </div>
+</div>
+
+<!-- ══ PLACEMENT TEST ══ -->
+<div id="screen-test" class="screen">
+  <div style="max-width:560px;width:90%;margin:40px auto 0;">
+    <div class="test-card">
+      <div class="test-header">
+        <div class="test-title">Test de placement</div>
+        <div class="test-sub">40 questions pour calibrer précisément ton niveau</div>
+      </div>
+      <div class="test-progress-wrap">
+        <span class="test-progress-label" id="test-progress-label">0 / 40</span>
+        <span class="test-progress-label" id="test-level-label"></span>
+      </div>
+      <div class="test-progress"><div class="test-progress-fill" id="test-progress-fill" style="width:0%"></div></div>
+      <div class="test-word" id="test-word">—</div>
+      <div class="test-word-level" id="test-word-level"></div>
+      <button class="test-speak" id="test-speak-btn" onclick="speakTestWord()">🔊 Écouter</button>
+      <div class="test-options" id="test-options"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="screen-app" class="screen">
+  <header class="app-header">
+    <div class="logo-small"><span class="fl">Fl</span><span class="ent">uent</span></div>
+    <div class="header-right">
+      <span class="streak-badge zero" id="streak-badge" title="Jours consécutifs">🔥 <span id="streak-num">0</span></span>
+      <span class="user-badge" id="user-badge">—</span>
+      <button class="icon-btn" onclick="handleLogout()" title="Déconnexion">↩</button>
+    </div>
+  </header>
+
+  <!-- Big mode buttons -->
+  <div class="mode-selector" id="mode-selector" style="grid-template-columns:repeat(3,1fr);">
+    <button class="mode-btn active" onclick="switchMode('flashcard')">
+      <span class="mode-icon">⚡</span>
+      <span class="mode-label">Flashcard</span>
+      <span class="mode-desc">Mémorise</span>
+    </button>
+    <button class="mode-btn" onclick="switchMode('qcm')">
+      <span class="mode-icon">🎯</span>
+      <span class="mode-label">QCM</span>
+      <span class="mode-desc">Choix multiples</span>
+    </button>
+    <button class="mode-btn" onclick="switchMode('dictee')">
+      <span class="mode-icon">🎧</span>
+      <span class="mode-label">Dictée</span>
+      <span class="mode-desc">Écoute & écris</span>
+    </button>
+    <button class="mode-btn" onclick="switchMode('saisie')">
+      <span class="mode-icon">✍️</span>
+      <span class="mode-label">Saisie libre</span>
+      <span class="mode-desc">Traduis sans aide</span>
+    </button>
+    <button class="mode-btn" onclick="switchMode('sprint')">
+      <span class="mode-icon">🏃</span>
+      <span class="mode-label">Sprint</span>
+      <span class="mode-desc">60 secondes</span>
+    </button>
+    <button class="mode-btn" onclick="switchMode('retour')">
+      <span class="mode-icon">🔄</span>
+      <span class="mode-label">Retournement</span>
+      <span class="mode-desc">FR → EN</span>
+    </button>
+  </div>
+
+  <!-- Stats + Profil -->
+  <div class="bottom-nav">
+    <button class="bottom-nav-btn" id="btn-stats" onclick="switchMode('stats')">📊 Stats</button>
+    <button class="bottom-nav-btn" id="btn-partager" onclick="switchMode('partager')">📤 Partager</button>
+    <button class="bottom-nav-btn" id="btn-profil" onclick="switchMode('profil')">👤 Profil</button>
+  </div>
+
+  <!-- Level filters -->
+  <div class="level-filters" id="level-filters">
+    <button class="lvl-btn active" onclick="setLevel('ALL')" style="background:var(--ocean);color:#fff;" id="lvl-ALL">TOUS</button>
+    <button class="lvl-btn" data-level="A1" onclick="setLevel('A1')" id="lvl-A1">A1</button>
+    <button class="lvl-btn" data-level="A2" onclick="setLevel('A2')" id="lvl-A2">A2</button>
+    <button class="lvl-btn" data-level="B1" onclick="setLevel('B1')" id="lvl-B1">B1</button>
+    <button class="lvl-btn" data-level="B2" onclick="setLevel('B2')" id="lvl-B2">B2</button>
+    <button class="lvl-btn" data-level="C1" onclick="setLevel('C1')" id="lvl-C1">C1</button>
+  </div>
+
+  <div class="app-content" id="app-content">
+    <div class="empty-state"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://uworartoqanxauxkoefb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3b3JhcnRvcWFueGF1eGtvZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNjE3OTMsImV4cCI6MjA4ODczNzc5M30.3ucAB-CyzG3CXpTdcftl1FQf7r-XJSPZeP1ZBlLUy_U'
+);
+
+// ══ STATE ══
+let state = {
+  user: null, vocab: [], progress: {},
+  queue: [], currentIdx: 0, mode: 'flashcard', level: 'ALL',
+  revealed: false, detectedLevel: null, accessibleLevels: [],
+  sprintTimer: null, sprintSeconds: 60, sprintScore: 0, sprintRunning: false,
+  qcmAnswered: false,
+  streak: 0, lastPlayDate: null,
+};
+
+const LEVEL_ORDER = ['A1','A2','B1','B2','C1'];
+const LEVEL_COLORS = { A1:'#00b894', A2:'#00bcd4', B1:'#0066cc', B2:'#6c5ce7', C1:'#e84393' };
+
+// ══ MASTERY ══
+function getMastery(p) {
+  if (!p) return 0;
+  let modes = 0;
+  if (p.flash_score >= 3) modes++;
+  if (p.qcm_streak >= 3) modes++;
+  if (p.dictee_streak >= 2) modes++;
+  if (p.sprint_streak >= 4) modes++;
+  if (p.saisie_streak >= 2) modes++;
+  if (p.retour_streak >= 3) modes++;
+  if (modes === 0 && (p.flash_score > 0 || p.qcm_streak > 0 || p.dictee_streak > 0 || p.sprint_streak > 0)) return 1;
+  if (modes >= 2) return 3;
+  if (modes >= 1) return 2;
+  return 0;
+}
+function isValidated(p) { return getMastery(p) >= 2; }
+
+// Level up check: if 90%+ of current level validated → unlock next
+function checkLevelUp() {
+  if (!state.detectedLevel) return;
+  const idx = LEVEL_ORDER.indexOf(state.detectedLevel);
+  if (idx >= LEVEL_ORDER.length - 1) return;
+  const currentLvl = LEVEL_ORDER[idx];
+  const wordsInLevel = state.vocab.filter(w => w.niveau_cefr === currentLvl);
+  if (wordsInLevel.length === 0) return;
+  const validatedCount = wordsInLevel.filter(w => isValidated(state.progress[w.anglais])).length;
+  const pct = validatedCount / wordsInLevel.length;
+  if (pct >= 0.9) {
+    const nextLevel = LEVEL_ORDER[idx + 1];
+    if (!state.accessibleLevels.includes(nextLevel)) {
+      state.detectedLevel = nextLevel;
+      state.accessibleLevels.push(nextLevel);
+      applyLevelAccess();
+      showToast(`🎉 Niveau ${nextLevel} débloqué !`, 'levelup');
+      if (!state.user?.isGuest) {
+        sb.from('users').update({ detected_level: nextLevel }).eq('id', state.user.id);
+      }
+    }
+  }
+}
+
+// ══ LEVEL ACCESS ══
+function computeAccessibleLevels(detectedLevel) {
+  const idx = LEVEL_ORDER.indexOf(detectedLevel);
+  // Accessible: detected level + N-1 (filet) + tout ce qui vient après
+  // Auto-validé: N-2 et moins
+  const accessible = [];
+  LEVEL_ORDER.forEach((l, i) => {
+    if (i >= idx - 1) accessible.push(l); // N-1 et au-dessus
+  });
+  return accessible;
+}
+
+function applyLevelAccess() {
+  if (!state.detectedLevel) return;
+  const idx = LEVEL_ORDER.indexOf(state.detectedLevel);
+  // Auto-validate N-2 and below
+  LEVEL_ORDER.forEach((l, i) => {
+    if (i <= idx - 2) {
+      state.vocab.filter(w => w.niveau_cefr === l).forEach(w => {
+        if (!state.progress[w.anglais]) {
+          state.progress[w.anglais] = { flash_score:3, qcm_streak:3, dictee_streak:2, sprint_streak:4 };
+        }
+      });
+    }
+  });
+  // Update accessible levels (N-1 and above, capped at detected+1 via level-up)
+  state.accessibleLevels = computeAccessibleLevels(state.detectedLevel);
+  updateLevelButtons();
+}
+
+function updateLevelButtons() {
+  LEVEL_ORDER.forEach(l => {
+    const btn = document.getElementById('lvl-' + l);
+    if (!btn) return;
+    const accessible = state.accessibleLevels.includes(l);
+    btn.classList.toggle('locked', !accessible);
+    if (accessible) {
+      btn.style.borderColor = LEVEL_COLORS[l];
+      btn.style.color = state.level === l ? '#fff' : LEVEL_COLORS[l];
+      btn.style.background = state.level === l ? LEVEL_COLORS[l] : 'var(--surface)';
+      btn.onclick = () => setLevel(l);
+    } else {
+      btn.style.borderColor = '';
+      btn.style.color = '';
+      btn.style.background = '';
+      btn.onclick = () => showToast('🔒 Atteins 90% du niveau actuel pour débloquer', 'info');
+    }
+  });
+}
+
+// ══ SUPABASE ══
+async function loadVocab() {
+  // Paginate to load all 4550 words
+  let all = [], from = 0, pageSize = 1000;
+  while (true) {
+    const { data, error } = await sb.from('vocabulary').select('*').range(from, from + pageSize - 1);
+    if (error || !data || data.length === 0) break;
+    all = all.concat(data);
+    if (data.length < pageSize) break;
+    from += pageSize;
+  }
+  return all;
+}
+
+async function saveProgress(word, updates) {
+  if (state.user?.isGuest) return;
+  touchStreak();
+  const current = state.progress[word] || {};
+  const merged = { ...current, ...updates };
+  state.progress[word] = merged;
+  await sb.from('progress').upsert({
+    user_id: state.user.id, word,
+    flash_score: merged.flash_score || 0,
+    qcm_streak: merged.qcm_streak || 0,
+    dictee_streak: merged.dictee_streak || 0,
+    sprint_streak: merged.sprint_streak || 0,
+    saisie_streak: merged.saisie_streak || 0,
+    retour_streak: merged.retour_streak || 0,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'user_id,word' });
+  checkLevelUp();
+}
+
+async function loadProgress() {
+  if (state.user?.isGuest) return;
+  let all = [], from = 0;
+  while (true) {
+    const { data } = await sb.from('progress').select('*').eq('user_id', state.user.id).range(from, from + 999);
+    if (!data || data.length === 0) break;
+    all = all.concat(data);
+    if (data.length < 1000) break;
+    from += 1000;
+  }
+  state.progress = {};
+  all.forEach(p => {
+    state.progress[p.word] = { flash_score:p.flash_score||0, qcm_streak:p.qcm_streak||0, dictee_streak:p.dictee_streak||0, sprint_streak:p.sprint_streak||0, saisie_streak:p.saisie_streak||0, retour_streak:p.retour_streak||0 };
+  });
+}
+
+// ══ LOGIN ══
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('tab-login').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('tab-register').style.display = tab==='register' ? 'block' : 'none';
+  document.getElementById('login-error').textContent = '';
+}
+
+async function handleLogin() {
+  const id = document.getElementById('login-id').value.trim().toUpperCase();
+  const pwd = document.getElementById('login-pwd').value;
+  if (!id || !pwd) { showError('Remplis tous les champs'); return; }
+  setLoading('btn-login', true);
+  const { data: user } = await sb.from('users').select('*').eq('code', id).eq('password_hash', btoa(pwd)).single();
+  if (!user) { showError('Identifiant ou mot de passe incorrect'); setLoading('btn-login', false); return; }
+  state.user = user;
+  localStorage.setItem('wf_user', JSON.stringify(user));
+  await startApp(false);
+}
+
+async function handleRegister() {
+  const id = document.getElementById('reg-id').value.trim().toUpperCase();
+  const pwd = document.getElementById('reg-pwd').value;
+  const pwd2 = document.getElementById('reg-pwd2').value;
+  if (!id || !pwd) { showError('Remplis tous les champs'); return; }
+  if (pwd !== pwd2) { showError('Les mots de passe ne correspondent pas'); return; }
+  if (pwd.length < 4) { showError('Mot de passe trop court (min 4 caractères)'); return; }
+  setLoading('btn-register', true);
+  const { data: existing } = await sb.from('users').select('id').eq('code', id).single();
+  if (existing) { showError('Cet identifiant est déjà pris'); setLoading('btn-register', false); return; }
+  const { data: user, error } = await sb.from('users').insert({ code: id, password_hash: btoa(pwd) }).select().single();
+  if (error || !user) { showError('Erreur lors de la création du compte'); setLoading('btn-register', false); return; }
+  state.user = user;
+  localStorage.setItem('wf_user', JSON.stringify(user));
+  await startApp(true);
+}
+
+async function handleGuest() {
+  state.user = { id: 'guest', code: 'INVITÉ', isGuest: true };
+  await startApp(true);
+}
+
+function handleLogout() {
+  if (state.sprintTimer) clearInterval(state.sprintTimer);
+  localStorage.removeItem('wf_user');
+  state = { user:null, vocab:[], progress:{}, queue:[], currentIdx:0, mode:'flashcard', level:'ALL', revealed:false, detectedLevel:null, accessibleLevels:[], sprintTimer:null, sprintSeconds:60, sprintScore:0, sprintRunning:false, qcmAnswered:false, streak:0, lastPlayDate:null };
+  showScreen('landing');
+}
+
+function showError(msg) { document.getElementById('login-error').textContent = msg; ['btn-login','btn-register'].forEach(id => setLoading(id, false)); }
+function setLoading(id, v) { const b = document.getElementById(id); if(b){ b.disabled=v; b.textContent = v ? '…' : (id==='btn-login'?'Se connecter →':'Créer mon compte →'); } }
+
+// ══ APP START ══
+async function startApp(isNew = false) {
+  showScreen('app');
+  document.getElementById('user-badge').textContent = state.user.code;
+  document.getElementById('app-content').innerHTML = '<div class="empty-state"><div class="loading-dots"><span></span><span></span><span></span></div><p style="margin-top:16px;font-size:13px;color:var(--muted)">Chargement du vocabulaire…</p></div>';
+  state.vocab = await loadVocab();
+  if (state.vocab.length === 0) {
+    const _isNew = isNew;
+    document.getElementById('app-content').innerHTML = '<div class="empty-state">⚠️ Impossible de charger le vocabulaire.<br><br><small style="color:var(--muted)">Vérifie ta connexion ou que le projet Supabase est actif.</small><br><br><button class="reveal-btn" id="retry-btn">Réessayer</button></div>';
+    document.getElementById('retry-btn').onclick = () => startApp(_isNew);
+    return;
+  }
+  if (!state.user.isGuest) {
+    await loadProgress();
+    // Restore detected level from DB
+    if (state.user.detected_level) {
+      state.detectedLevel = state.user.detected_level;
+      applyLevelAccess();
+    }
+  }
+  if (!state.user.isGuest) loadStreak();
+  if (isNew && !state.user.isGuest) {
+    startPlacementTest();
+  } else {
+    if (!state.detectedLevel) {
+      state.accessibleLevels = [...LEVEL_ORDER];
+      updateLevelButtons();
+    }
+    buildQueue();
+    switchMode('flashcard');
+  }
+}
+
+// ══ STREAK ══
+function loadStreak() {
+  const key = 'fluent_streak_' + state.user.id;
+  const saved = localStorage.getItem(key);
+  if (saved) {
+    const { streak, lastDate } = JSON.parse(saved);
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (lastDate === today) {
+      state.streak = streak;
+    } else if (lastDate === yesterday) {
+      state.streak = streak; // still valid, will +1 on next interaction
+    } else {
+      state.streak = 0; // broken
+      localStorage.setItem(key, JSON.stringify({ streak: 0, lastDate: today }));
+    }
+    state.lastPlayDate = lastDate;
+  }
+  updateStreakBadge();
+}
+
+function touchStreak() {
+  if (state.user?.isGuest) return;
+  const key = 'fluent_streak_' + state.user.id;
+  const today = new Date().toDateString();
+  if (state.lastPlayDate === today) return; // already counted today
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  if (state.lastPlayDate === yesterday || !state.lastPlayDate) {
+    state.streak++;
+  } else if (state.lastPlayDate !== today) {
+    state.streak = 1; // reset but count today
+  }
+  state.lastPlayDate = today;
+  localStorage.setItem(key, JSON.stringify({ streak: state.streak, lastDate: today }));
+  updateStreakBadge();
+  if (state.streak > 1) showToast('🔥 ' + state.streak + ' jours d\u2019afilée !', 'levelup');
+}
+
+function updateStreakBadge() {
+  const el = document.getElementById('streak-badge');
+  const num = document.getElementById('streak-num');
+  if (!el || !num) return;
+  num.textContent = state.streak;
+  el.className = 'streak-badge' + (state.streak === 0 ? ' zero' : '');
+}
+
+// ══ PLACEMENT TEST (40 questions) ══
+const TEST_BANK = [
+  // A1 (10 questions)
+  { w:'house',   t:'maison',     l:'A1', opts:['maison','chien','voiture','pain'] },
+  { w:'happy',   t:'heureux',    l:'A1', opts:['triste','heureux','grand','rouge'] },
+  { w:'water',   t:'eau',        l:'A1', opts:['eau','feu','pain','air'] },
+  { w:'book',    t:'livre',      l:'A1', opts:['stylo','table','livre','chaise'] },
+  { w:'friend',  t:'ami',        l:'A1', opts:['ennemi','ami','frère','voisin'] },
+  { w:'eat',     t:'manger',     l:'A1', opts:['boire','manger','dormir','courir'] },
+  { w:'big',     t:'grand',      l:'A1', opts:['petit','vieux','grand','rapide'] },
+  { w:'school',  t:'école',      l:'A1', opts:['école','bureau','hôpital','magasin'] },
+  { w:'mother',  t:'mère',       l:'A1', opts:['père','sœur','mère','fille'] },
+  { w:'good',    t:'bon / bien', l:'A1', opts:['mauvais','bon / bien','vieux','nouveau'] },
+  // A2 (10 questions)
+  { w:'travel',  t:'voyager',    l:'A2', opts:['chanter','voyager','manger','dormir'] },
+  { w:'weather', t:'météo',      l:'A2', opts:['météo','argent','famille','travail'] },
+  { w:'explain', t:'expliquer',  l:'A2', opts:['expliquer','oublier','chercher','trouver'] },
+  { w:'choose',  t:'choisir',    l:'A2', opts:['perdre','choisir','vendre','porter'] },
+  { w:'answer',  t:'réponse',    l:'A2', opts:['question','réponse','problème','résultat'] },
+  { w:'sometimes',t:'parfois',   l:'A2', opts:['toujours','jamais','parfois','souvent'] },
+  { w:'problem', t:'problème',   l:'A2', opts:['solution','réponse','problème','avantage'] },
+  { w:'important',t:'important', l:'A2', opts:['facile','impossible','important','inutile'] },
+  { w:'remember',t:'se souvenir',l:'A2', opts:['oublier','se souvenir','apprendre','enseigner'] },
+  { w:'agree',   t:'être d\'accord',l:'A2', opts:['refuser','hésiter','être d\'accord','ignorer'] },
+  // B1 (10 questions)
+  { w:'achieve', t:'atteindre',  l:'B1', opts:['atteindre','oublier','chercher','perdre'] },
+  { w:'despite', t:'malgré',     l:'B1', opts:['depuis','malgré','pendant','grâce à'] },
+  { w:'improve', t:'améliorer',  l:'B1', opts:['améliorer','aggraver','changer','ignorer'] },
+  { w:'evidence',t:'preuve',     l:'B1', opts:['preuve','opinion','idée','théorie'] },
+  { w:'require', t:'exiger',     l:'B1', opts:['proposer','exiger','suggérer','refuser'] },
+  { w:'challenge',t:'défi',      l:'B1', opts:['avantage','problème','défi','solution'] },
+  { w:'encourage',t:'encourager',l:'B1', opts:['décourager','encourager','obliger','interdire'] },
+  { w:'involve', t:'impliquer',  l:'B1', opts:['exclure','impliquer','ignorer','rejeter'] },
+  { w:'reduce',  t:'réduire',    l:'B1', opts:['augmenter','réduire','maintenir','créer'] },
+  { w:'consider',t:'considérer', l:'B1', opts:['ignorer','refuser','considérer','oublier'] },
+  // B2 (5 questions)
+  { w:'emphasize',t:'souligner', l:'B2', opts:['souligner','traduire','organiser','supprimer'] },
+  { w:'resilient',t:'résilient', l:'B2', opts:['résilient','fragile','logique','créatif'] },
+  { w:'ambiguous',t:'ambigu',    l:'B2', opts:['clair','précis','ambigu','simple'] },
+  { w:'scrutinize',t:'examiner attentivement',l:'B2', opts:['examiner attentivement','ignorer','simplifier','résumer'] },
+  { w:'advocate', t:'défenseur / préconiser',l:'B2', opts:['opposant','défenseur / préconiser','observateur','critique'] },
+  // C1 (5 questions)
+  { w:'pragmatic',t:'pragmatique',l:'C1', opts:['pragmatique','symbolique','rhétorique','empirique'] },
+  { w:'hegemony', t:'hégémonie', l:'C1', opts:['démocratie','hégémonie','anarchie','fédéralisme'] },
+  { w:'meticulous',t:'méticuleux',l:'C1', opts:['négligent','méticuleux','ambitieux','créatif'] },
+  { w:'mitigate', t:'atténuer',  l:'C1', opts:['atténuer','aggraver','ignorer','amplifier'] },
+  { w:'eloquent', t:'éloquent',  l:'C1', opts:['silencieux','éloquent','hésitant','confus'] },
+];
+
+let testIdx = 0;
+let testScores = { A1:0, A2:0, B1:0, B2:0, C1:0 };
+let testMax = { A1:10, A2:10, B1:10, B2:5, C1:5 };
+let currentTestWord = null;
+
+function startPlacementTest() {
+  showScreen('test');
+  testIdx = 0;
+  testScores = { A1:0, A2:0, B1:0, B2:0, C1:0 };
+  // Shuffle within each level group so test order is different every time
+  const byLevel = {};
+  TEST_BANK.forEach(q => { if (!byLevel[q.l]) byLevel[q.l] = []; byLevel[q.l].push(q); });
+  Object.keys(byLevel).forEach(l => shuffle(byLevel[l]));
+  // Also randomize the distractors order per question
+  TEST_BANK_SHUFFLED = ['A1','A2','B1','B2','C1'].flatMap(l => byLevel[l] || []);
+  renderTestWord();
+}
+
+let TEST_BANK_SHUFFLED = [...TEST_BANK];
+
+function speakTestWord() {
+  if (currentTestWord) speak(currentTestWord);
+}
+
+function renderTestWord() {
+  const w = TEST_BANK_SHUFFLED[testIdx];
+  currentTestWord = w.w;
+  const pct = (testIdx / TEST_BANK.length) * 100;
+  document.getElementById('test-progress-fill').style.width = pct + '%';
+  document.getElementById('test-progress-label').textContent = (testIdx + 1) + ' / ' + TEST_BANK.length;
+  document.getElementById('test-level-label').textContent = 'Niveau testé : ' + w.l;
+  document.getElementById('test-word').textContent = w.w;
+  document.getElementById('test-word-level').textContent = w.l;
+  const opts = document.getElementById('test-options');
+  opts.innerHTML = '';
+  shuffle([...w.opts]).forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'test-opt'; b.textContent = opt;
+    b.onclick = () => handleTestAnswer(opt === w.t, opt, w.t, w.l);
+    opts.appendChild(b);
+  });
+}
+
+function handleTestAnswer(correct, chosen, answer, level) {
+  document.querySelectorAll('.test-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === answer) b.classList.add('correct');
+    else if (b.textContent === chosen && !correct) b.classList.add('wrong');
+  });
+  if (correct) testScores[level]++;
+  setTimeout(() => {
+    testIdx++;
+    if (testIdx >= TEST_BANK_SHUFFLED.length) finishTest();
+    else renderTestWord();
+  }, 500);
+}
+
+function finishTest() {
+  // Detect level: highest level where score >= 50%
+  let detected = 'A1';
+  LEVEL_ORDER.forEach(l => {
+    const pct = testScores[l] / testMax[l];
+    if (pct >= 0.5) detected = l;
+  });
+  state.detectedLevel = detected;
+  // Save to DB
+  if (!state.user?.isGuest) {
+    sb.from('users').update({ detected_level: detected }).eq('id', state.user.id);
+  }
+  applyLevelAccess();
+  showScreen('app');
+  buildQueue();
+  switchMode('flashcard');
+  showToast('Niveau détecté : ' + detected + ' 🎯', 'info');
+}
+
+// ══ QUEUE ══
+function buildQueue(mode) {
+  const m = mode || state.mode;
+  let words = state.vocab;
+  if (state.level !== 'ALL') {
+    words = words.filter(w => w.niveau_cefr === state.level);
+  } else if (state.accessibleLevels.length > 0) {
+    words = words.filter(w => state.accessibleLevels.includes(w.niveau_cefr));
+  }
+  if (m !== 'sprint' && m !== 'stats' && m !== 'profil') {
+    const notValidated = words.filter(w => !isValidated(state.progress[w.anglais]));
+    const validated = words.filter(w => isValidated(state.progress[w.anglais]));
+    state.queue = [...shuffle(notValidated), ...shuffle(validated).slice(0, Math.max(5, Math.floor(notValidated.length * 0.15)))];
+  } else {
+    state.queue = shuffle([...words]);
+  }
+  state.currentIdx = 0;
+  state.revealed = false;
+}
+
+// ══ SPEAK (manual only) ══
+function speak(word) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = 'en-US'; u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+// ══ RENDER ══
+function render() {
+  if (state.mode === 'stats')     { renderStats(); return; }
+  if (state.mode === 'profil')    { renderProfil(); return; }
+  if (state.mode === 'partager')  { renderPartager(); return; }
+  if (state.mode === 'sprint') { if (!state.sprintRunning) renderSprintStart(); return; }
+  const w = state.queue[state.currentIdx];
+  if (!w) {
+    document.getElementById('app-content').innerHTML = `<div class="empty-state">🎉 Session terminée !<br><br><button class="reveal-btn" onclick="buildQueue();render()">Recommencer</button></div>`;
+    return;
+  }
+  if (state.mode === 'flashcard') renderFlashcard(w);
+  else if (state.mode === 'qcm')    renderQCM(w);
+  else if (state.mode === 'dictee') renderDictee(w);
+  else if (state.mode === 'saisie') renderSaisie(w);
+  else if (state.mode === 'retour') renderRetour(w);
+}
+
+// ── FLASHCARD ──
+function renderFlashcard(w) {
+  const color = LEVEL_COLORS[w.niveau_cefr] || '#0066cc';
+  document.getElementById('app-content').innerHTML = `
+    <div class="flashcard-wrap">
+      <div class="card-counter">${state.currentIdx + 1} / ${state.queue.length}</div>
+      <div class="flashcard">
+        <div class="card-lvl-badge" style="color:${color}">${w.niveau_cefr}</div>
+        <div class="card-word">${w.anglais}</div>
+        <button class="speak-btn" onclick="speak('${esc(w.anglais)}')">🔊 Écouter</button>
+        ${!state.revealed ? `
+          <button class="reveal-btn" onclick="revealFlash()">Voir la traduction</button>
+        ` : `
+          <div class="card-translation">${w.français}</div>
+          <div class="flash-actions">
+            <button class="flash-btn again" onclick="handleFlash(0)">😰<br>À revoir</button>
+            <button class="flash-btn hard"  onclick="handleFlash(1)">😅<br>Difficile</button>
+            <button class="flash-btn good"  onclick="handleFlash(2)">🙂<br>Ok</button>
+            <button class="flash-btn easy"  onclick="handleFlash(3)">😎<br>Facile !</button>
+          </div>
+        `}
+      </div>
+    </div>`;
+}
+
+function revealFlash() { state.revealed = true; render(); }
+
+async function handleFlash(score) {
+  const w = state.queue[state.currentIdx];
+  await saveProgress(w.anglais, { flash_score: score });
+  if (score === 3) showToast('⭐ Mot maîtrisé !', 'success');
+  nextWord();
+}
+
+// ── QCM ──
+function renderQCM(w) {
+  const p = state.progress[w.anglais] || {};
+  const streak = p.qcm_streak || 0;
+  const color = LEVEL_COLORS[w.niveau_cefr] || '#0066cc';
+  const distractors = getDistractors(w, 3);
+  const options = shuffle([w.français, ...distractors]);
+  document.getElementById('app-content').innerHTML = `
+    <div class="qcm-wrap">
+      <div class="qcm-card">
+        <div class="card-lvl-badge" style="color:${color};text-align:center;margin-bottom:14px;">${w.niveau_cefr}</div>
+        <div class="qcm-question">${w.anglais}</div>
+        <div style="text-align:center;margin:8px 0 20px;">
+          <button class="speak-btn" onclick="speak('${esc(w.anglais)}')">🔊 Écouter</button>
+        </div>
+        <div class="qcm-instruction">Quelle est la traduction ?</div>
+        <div class="qcm-options">
+          ${options.map((o,i) => `
+            <button class="qcm-opt" onclick="handleQCM(this,'${esc(o)}','${esc(w.français)}')">
+              <span class="qcm-letter">${String.fromCharCode(65+i)}</span>${o}
+            </button>`).join('')}
+        </div>
+      </div>
+      <div class="qcm-streak">Série correcte : ${streak}/3 ${'✓'.repeat(streak)}</div>
+    </div>`;
+}
+
+async function handleQCM(btn, chosen, correct) {
+  if (state.qcmAnswered) return;
+  state.qcmAnswered = true;
+  document.querySelectorAll('.qcm-opt').forEach(b => {
+    b.disabled = true;
+    const txt = b.textContent.trim().substring(1);
+    if (txt === correct) b.classList.add('correct');
+    else if (b === btn && chosen !== correct) b.classList.add('wrong');
+  });
+  const w = state.queue[state.currentIdx];
+  const p = state.progress[w.anglais] || {};
+  const isCorrect = chosen === correct;
+  const newStreak = isCorrect ? (p.qcm_streak||0) + 1 : 0;
+  await saveProgress(w.anglais, { qcm_streak: newStreak });
+  if (newStreak >= 3) showToast('🎯 Mot validé en QCM !', 'success');
+  setTimeout(() => { state.qcmAnswered = false; nextWord(); }, 700);
+}
+
+function getDistractors(word, n) {
+  // Same level, same first letter preferred
+  let pool = state.vocab.filter(w => w.anglais !== word.anglais && w.niveau_cefr === word.niveau_cefr);
+  const sameStart = pool.filter(w => w.anglais[0].toLowerCase() === word.anglais[0].toLowerCase());
+  const sameLenApprox = pool.filter(w => Math.abs(w.anglais.length - word.anglais.length) <= 2);
+  let candidates = [...new Set([...sameStart, ...sameLenApprox, ...pool])];
+  return shuffle(candidates).slice(0, n).map(w => w.français);
+}
+
+// ── DICTÉE ──
+function renderDictee(w) {
+  const p = state.progress[w.anglais] || {};
+  const streak = p.dictee_streak || 0;
+  document.getElementById('app-content').innerHTML = `
+    <div class="dictee-wrap">
+      <div class="dictee-card">
+        <div class="dictee-icon">🎧</div>
+        <div style="color:var(--muted);font-size:12px;margin-bottom:16px;font-family:'DM Mono',monospace;letter-spacing:2px;">${w.niveau_cefr}</div>
+        <div class="dictee-instruction">Écoute le mot et écris-le en anglais.<br>La traduction est masquée — c'est le principe !</div>
+        <button class="speak-btn" style="display:block;margin:0 auto 24px;font-size:16px;" onclick="speak('${esc(w.anglais)}')">🔊 Écouter</button>
+        <input class="dictee-input" id="dictee-inp" placeholder="Tape le mot anglais..." autocomplete="off" autocorrect="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter') validateDictee()">
+        <div class="dictee-hint" id="dictee-hint">Série : ${streak}/2</div>
+        <button class="btn-validate" onclick="validateDictee()">Valider →</button>
+        <button class="btn-skip" onclick="nextWord()">Passer</button>
+      </div>
+    </div>`;
+  setTimeout(() => document.getElementById('dictee-inp')?.focus(), 100);
+}
+
+// ── SAISIE LIBRE ──
+function renderSaisie(w) {
+  const p = state.progress[w.anglais] || {};
+  const streak = p.saisie_streak || 0;
+  document.getElementById('app-content').innerHTML = `
+    <div class="dictee-wrap">
+      <div class="dictee-card">
+        <div class="dictee-icon">✍️</div>
+        <div style="color:var(--muted);font-size:12px;margin-bottom:8px;font-family:'DM Mono',monospace;letter-spacing:2px;">${w.niveau_cefr}</div>
+        <div style="font-size:26px;font-weight:700;color:var(--text);margin-bottom:20px;font-family:'Bricolage Grotesque',sans-serif;">${w.français}</div>
+        <div class="dictee-instruction">Traduis ce mot en anglais.</div>
+        <input class="dictee-input" id="saisie-inp" placeholder="Tape la traduction anglaise..." autocomplete="off" autocorrect="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter') validateSaisie()">
+        <div class="dictee-hint" id="saisie-hint">Série : ${streak}/2</div>
+        <button class="btn-validate" onclick="validateSaisie()">Valider →</button>
+        <button class="btn-skip" onclick="nextWord()">Passer</button>
+      </div>
+    </div>`;
+  setTimeout(() => document.getElementById('saisie-inp')?.focus(), 100);
+}
+
+async function validateSaisie() {
+  const inp = document.getElementById('saisie-inp');
+  if (!inp) return;
+  const val = inp.value.trim().toLowerCase();
+  const w = state.queue[state.currentIdx];
+  const isCorrect = val === w.anglais.toLowerCase();
+  inp.classList.remove('correct','wrong');
+  inp.classList.add(isCorrect ? 'correct' : 'wrong');
+  const p = state.progress[w.anglais] || {};
+  const newStreak = isCorrect ? (p.saisie_streak||0) + 1 : 0;
+  document.getElementById('saisie-hint').textContent = isCorrect
+    ? `✓ Correct ! Série : ${newStreak}/2`
+    : `✗ La réponse était : "${w.anglais}"`;
+  await saveProgress(w.anglais, { saisie_streak: newStreak });
+  if (newStreak >= 2) showToast('✍️ Mot validé en saisie libre !', 'success');
+  setTimeout(() => nextWord(), isCorrect ? 600 : 1400);
+}
+
+async function validateDictee() {
+  const inp = document.getElementById('dictee-inp');
+  if (!inp) return;
+  const val = inp.value.trim().toLowerCase();
+  const w = state.queue[state.currentIdx];
+  const isCorrect = val === w.anglais.toLowerCase();
+  inp.classList.remove('correct','wrong');
+  inp.classList.add(isCorrect ? 'correct' : 'wrong');
+  const p = state.progress[w.anglais] || {};
+  const newStreak = isCorrect ? (p.dictee_streak||0) + 1 : 0;
+  document.getElementById('dictee-hint').textContent = isCorrect
+    ? `✓ Correct ! Série : ${newStreak}/2`
+    : `✗ La réponse était : "${w.anglais}"`;
+  await saveProgress(w.anglais, { dictee_streak: newStreak });
+  if (newStreak >= 2) showToast('🎧 Mot validé en dictée !', 'success');
+  setTimeout(() => nextWord(), isCorrect ? 600 : 1400);
+}
+
+// ── SPRINT ──
+function renderSprintStart() {
+  document.getElementById('app-content').innerHTML = `
+    <div style="text-align:center;padding:48px 16px;">
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:36px;font-weight:800;margin-bottom:12px;letter-spacing:-1px;">🏃 Sprint</div>
+      <div style="color:var(--muted);font-size:14px;margin-bottom:36px;line-height:1.8;">
+        60 secondes · Réponds le plus vite possible<br>Un mot validé = 4 bonnes réponses
+      </div>
+      <button class="btn-primary" style="max-width:220px;margin:0 auto;" onclick="startSprint()">Démarrer →</button>
+    </div>`;
+}
+
+function startSprint() {
+  state.sprintRunning = true;
+  state.sprintSeconds = 60;
+  state.sprintScore = 0;
+  buildQueue('sprint');
+  if (state.sprintTimer) clearInterval(state.sprintTimer);
+  state.sprintTimer = setInterval(() => {
+    state.sprintSeconds--;
+    const el = document.getElementById('sprint-timer');
+    if (el) { el.textContent = state.sprintSeconds + 's'; el.className = 'sprint-timer' + (state.sprintSeconds <= 10 ? ' urgent' : ''); }
+    if (state.sprintSeconds <= 0) { clearInterval(state.sprintTimer); renderSprintEnd(); }
+  }, 1000);
+  renderSprintWord();
+}
+
+function renderSprintWord() {
+  const w = state.queue[state.currentIdx % state.queue.length];
+  const opts = shuffle([w.français, ...getDistractors(w, 3)]);
+  document.getElementById('app-content').innerHTML = `
+    <div class="sprint-wrap">
+      <div class="sprint-header">
+        <div class="sprint-timer" id="sprint-timer">${state.sprintSeconds}s</div>
+        <div class="sprint-score-info">Score : ${state.sprintScore}<br>
+          <button style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);" onclick="speak('${esc(w.anglais)}')">🔊</button>
+        </div>
+      </div>
+      <div class="sprint-card">
+        <div class="sprint-word">${w.anglais}</div>
+        <div class="sprint-opts">
+          ${opts.map(o => `<button class="sprint-opt" onclick="handleSprint(this,'${esc(o)}','${esc(w.français)}','${esc(w.anglais)}')">${o}</button>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+async function handleSprint(btn, chosen, correct, wordEn) {
+  document.querySelectorAll('.sprint-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === correct) b.classList.add('correct');
+    else if (b === btn && chosen !== correct) b.classList.add('wrong');
+  });
+  const isCorrect = chosen === correct;
+  if (isCorrect) {
+    state.sprintScore++;
+    const p = state.progress[wordEn] || {};
+    const newStreak = (p.sprint_streak||0) + 1;
+    await saveProgress(wordEn, { sprint_streak: newStreak });
+    if (newStreak >= 4) showToast('🏃 Mot validé !', 'success');
+  }
+  state.currentIdx++;
+  setTimeout(() => { if (state.sprintSeconds > 0) renderSprintWord(); }, 280);
+}
+
+function renderSprintEnd() {
+  state.sprintRunning = false;
+  document.getElementById('app-content').innerHTML = `
+    <div class="sprint-end">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--muted);margin-bottom:14px;font-family:'DM Mono',monospace;">SPRINT TERMINÉ</div>
+      <div class="sprint-end-score">${state.sprintScore}</div>
+      <div class="sprint-end-label">bonnes réponses en 60 secondes</div>
+      <button class="btn-primary" style="max-width:180px;margin:0 auto;" onclick="state.sprintRunning=false;renderSprintStart()">Rejouer →</button>
+    </div>`;
+}
+
+// ── STATS ──
+function renderStats() {
+  const groups = [0,0,0,0];
+  state.vocab.forEach(w => { groups[getMastery(state.progress[w.anglais])]++; });
+  const validated = groups[2] + groups[3];
+  const lvl = state.detectedLevel || '?';
+  const msgs = {
+    A1:'Tu construis depuis les fondations — chaque mot compte !',
+    A2:'Les bases sont là. Les mots B1 vont vraiment booster ta compréhension.',
+    B1:'Bon niveau ! A1+A2 sont acquis. Focus sur B1 et B2.',
+    B2:'Niveau avancé ! A1 et A2 sont acquis. B1 reste ton filet, cap sur C1.',
+    C1:'Excellent ! A1, A2, B1 sont validés. Le vocabulaire C1 est ton terrain de jeu.',
+  };
+  const statsData = LEVEL_ORDER.map(l => {
+    const words = state.vocab.filter(w => w.niveau_cefr === l);
+    const known = words.filter(w => isValidated(state.progress[w.anglais])).length;
+    return { l, known, total: words.length };
+  });
+  document.getElementById('app-content').innerHTML = `
+    <div class="stats-wrap">
+      <div class="stats-hero">
+        <div class="stats-big">${validated}</div>
+        <div class="stats-big-label">mots validés sur ${state.vocab.length}</div>
+        ${lvl !== '?' ? `<div class="stats-msg">📊 Niveau <strong>${lvl}</strong> — ${msgs[lvl]||''}</div>` : ''}
+      </div>
+      <div class="stats-chart-card">
+        <div class="stats-section-title">Maîtrise globale</div>
+        <div class="chart-wrap">
+          <div class="chart-canvas-wrap"><canvas id="masteryChart"></canvas></div>
+          <div class="chart-legend">
+            ${[['#d1d5e8','Inconnu',groups[0]],['#f0a500','En cours',groups[1]],['#00b894','Acquis',groups[2]],['#0066cc','Maîtrisé',groups[3]]].map(([c,l,v])=>`
+              <div class="legend-item">
+                <div class="legend-dot" style="background:${c}"></div>
+                <span class="legend-label">${l}</span>
+                <span class="legend-val">${v}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="stats-levels">
+        <div class="stats-section-title">Par niveau</div>
+        ${statsData.map(({l,known,total:t})=>`
+          <div class="level-row">
+            <div class="level-row-header">
+              <span class="level-tag" style="background:${LEVEL_COLORS[l]}">${l}</span>
+              <span class="level-row-counts">${known} / ${t}</span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:${t>0?Math.round(known/t*100):0}%;background:${LEVEL_COLORS[l]}"></div></div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  setTimeout(() => {
+    const ctx = document.getElementById('masteryChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: { datasets: [{ data: groups, backgroundColor: ['#d1d5e8','#f0a500','#00b894','#0066cc'], borderWidth:0, hoverOffset:4 }] },
+      options: { cutout:'72%', plugins:{ legend:{display:false}, tooltip:{enabled:false} }, animation:{duration:800} }
+    });
+  }, 50);
+}
+
+// ── PROFIL ──
+function renderProfil() {
+  const lvl = state.detectedLevel || '?';
+  const idx = LEVEL_ORDER.indexOf(lvl);
+  const totalValidated = state.vocab.filter(w => isValidated(state.progress[w.anglais])).length;
+  const totalSeen = Object.keys(state.progress).length;
+
+  // Level-up progress
+  let levelUpHtml = '';
+  if (lvl !== '?' && idx < LEVEL_ORDER.length - 1) {
+    const currentWords = state.vocab.filter(w => w.niveau_cefr === lvl);
+    const currentValidated = currentWords.filter(w => isValidated(state.progress[w.anglais])).length;
+    const pct = currentWords.length > 0 ? Math.round(currentValidated / currentWords.length * 100) : 0;
+    const nextLvl = LEVEL_ORDER[idx + 1];
+    levelUpHtml = `
+      <div class="level-up-card">
+        <div class="level-up-title">🚀 Progression vers ${nextLvl}</div>
+        <div class="level-up-text">Valide 90% des mots ${lvl} pour débloquer le niveau ${nextLvl}.</div>
+        <div class="level-up-bar-wrap">
+          <div class="level-up-label"><span>${currentValidated} / ${currentWords.length} mots ${lvl}</span><span>${pct}% (objectif 90%)</span></div>
+          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${LEVEL_COLORS[lvl]}"></div></div>
+        </div>
+      </div>`;
+  }
+
+  document.getElementById('app-content').innerHTML = `
+    <div class="profil-wrap">
+      <div class="profil-hero">
+        <div class="profil-avatar">🧠</div>
+        <div class="profil-name">${state.user?.code || '—'}</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+          <div class="profil-level-badge" style="margin-bottom:0;">${lvl !== '?' ? 'Niveau ' + lvl : 'Niveau non défini'}</div>
+          ${lvl === '?' ? `<button onclick="startPlacementTest()" style="background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:6px 16px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">🎯 Tester mon niveau</button>` : ''}
+        </div>
+        <div class="profil-stats-row">
+          <div class="profil-stat"><div class="profil-stat-num">${totalValidated}</div><div class="profil-stat-label">Mots validés</div></div>
+          <div class="profil-stat"><div class="profil-stat-num">${totalSeen}</div><div class="profil-stat-label">Mots vus</div></div>
+          <div class="profil-stat"><div class="profil-stat-num">${state.vocab.length}</div><div class="profil-stat-label">Total dispo</div></div>
+        </div>
+      </div>
+
+      ${levelUpHtml}
+
+      <div class="profil-card">
+        <div class="profil-card-title">Accès aux niveaux</div>
+        ${LEVEL_ORDER.map(l => {
+          const isAccessible = state.accessibleLevels.includes(l);
+          const isAutoValid = idx >= 0 && LEVEL_ORDER.indexOf(l) <= idx - 2;
+          const words = state.vocab.filter(w => w.niveau_cefr === l);
+          const known = words.filter(w => isValidated(state.progress[w.anglais])).length;
+          return `
+            <div class="profil-info-row">
+              <span class="profil-info-label"><span style="display:inline-block;width:36px;background:${LEVEL_COLORS[l]};color:#fff;border-radius:4px;text-align:center;font-size:11px;font-weight:700;padding:2px 0;font-family:'DM Mono',monospace;letter-spacing:1px;">${l}</span></span>
+              <span class="profil-info-val">
+                ${isAutoValid ? '✅ Auto-validé' : isAccessible ? `${known}/${words.length} mots` : '🔒 Verrouillé'}
+              </span>
+            </div>`;
+        }).join('')}
+      </div>
+
+      <div class="profil-card">
+        <div class="profil-card-title">Comment ça fonctionne</div>
+        <div class="profil-explain">
+          <p>📊 <strong>Le test de placement</strong> évalue ton niveau sur 40 questions et détermine ton point de départ.</p>
+          <p>🔒 <strong>Les niveaux inférieurs</strong> (N-2 et moins) sont automatiquement validés — pas besoin de revoir les bases que tu maîtrises déjà.</p>
+          <p>🛡️ <strong>Le filet de sécurité</strong> : le niveau juste en dessous du tien reste accessible au cas où.</p>
+          <p>🚀 <strong>Le level up</strong> : valide 90% des mots de ton niveau actuel pour débloquer le suivant automatiquement.</p>
+          <p>⭐ <strong>Un mot est validé</strong> quand tu réussis dans au moins un mode : Facile en flashcard, 3× correct en QCM, 2× correct en dictée, ou 4× correct en sprint.</p>
+        </div>
+      </div>
+
+      ${!state.user?.isGuest ? `
+      <div class="profil-card" style="text-align:center;">
+        <button class="btn-primary" style="background:var(--red);" onclick="handleLogout()">Se déconnecter</button>
+      </div>` : ''}
+    </div>`;
+}
+
+
+// ── RETOURNEMENT FR→EN QCM ──
+function renderRetour(w) {
+  const p = state.progress[w.anglais] || {};
+  const streak = p.retour_streak || 0;
+  const color = LEVEL_COLORS[w.niveau_cefr] || '#0066cc';
+  const distractors = getDistractors(w, 3);
+  // Options are english words (we show french, ask for english)
+  const engPool = state.vocab.filter(v => v.niveau_cefr === w.niveau_cefr && v.anglais !== w.anglais);
+  const engOpts = shuffle(engPool).slice(0,3).map(v => v.anglais);
+  const options = shuffle([w.anglais, ...engOpts]);
+  document.getElementById('app-content').innerHTML = `
+    <div class="qcm-wrap">
+      <div class="qcm-card">
+        <div class="card-lvl-badge" style="color:${color};text-align:center;margin-bottom:14px;">${w.niveau_cefr}</div>
+        <div style="text-align:center;color:var(--muted);font-size:12px;letter-spacing:2px;margin-bottom:10px;font-family:'DM Mono',monospace;">FR → EN</div>
+        <div class="retour-fr">${w.français}</div>
+        <div class="retour-label">Quelle est la traduction anglaise ?</div>
+        <div class="qcm-options">
+          ${options.map((o,i) => `
+            <button class="qcm-opt" onclick="handleRetour(this,'${esc(o)}','${esc(w.anglais)}')">
+              <span class="qcm-letter">${String.fromCharCode(65+i)}</span>${o}
+            </button>`).join('')}
+        </div>
+      </div>
+      <div class="qcm-streak">Série correcte : ${streak}/3 ${'✓'.repeat(Math.min(streak,3))}</div>
+    </div>`;
+}
+
+async function handleRetour(btn, chosen, correct) {
+  if (state.qcmAnswered) return;
+  state.qcmAnswered = true;
+  document.querySelectorAll('.qcm-opt').forEach(b => {
+    b.disabled = true;
+    const txt = b.textContent.trim().substring(1);
+    if (txt === correct) b.classList.add('correct');
+    else if (b === btn && chosen !== correct) b.classList.add('wrong');
+  });
+  const w = state.queue[state.currentIdx];
+  const p = state.progress[w.anglais] || {};
+  const isCorrect = chosen === correct;
+  const newStreak = isCorrect ? (p.retour_streak||0) + 1 : 0;
+  await saveProgress(w.anglais, { retour_streak: newStreak });
+  if (newStreak >= 3) showToast('🔄 Mot validé en retournement !', 'success');
+  setTimeout(() => { state.qcmAnswered = false; nextWord(); }, 700);
+}
+
+// ── PARTAGER ──
+function renderPartager() {
+  const totalValidated = state.vocab.filter(w => isValidated(state.progress[w.anglais])).length;
+  const lvl = state.detectedLevel || '?';
+  const streak = state.streak;
+  const shareText = `J'ai validé ${totalValidated} mots en anglais (niveau ${lvl}) avec Fluent — Sharp your English 🧠\n${window.location.href}`;
+
+  document.getElementById('app-content').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="share-card">
+        <div class="share-title-lbl">Ma progression Fluent</div>
+        <div class="share-big">${totalValidated}</div>
+        <div class="share-sub">mots anglais validés</div>
+        ${lvl !== '?' ? `<div class="share-lvl-badge">Niveau ${lvl}</div>` : ''}
+        ${streak > 0 ? `<div style="font-size:13px;opacity:0.8;margin-top:6px;">🔥 ${streak} jour${streak>1?'s':''} d'affilée</div>` : ''}
+        <div class="share-url-txt" style="margin-top:12px;">${window.location.hostname}</div>
+      </div>
+      <div class="share-actions">
+        <button class="btn-share btn-share-primary" onclick="copyShareText(${JSON.stringify(shareText)})">📋 Copier le texte</button>
+        ${navigator.share ? `<button class="btn-share btn-share-secondary" onclick="nativeShare(${JSON.stringify(shareText)})">↗ Partager</button>` : ''}
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:20px;">
+        <div style="font-size:11px;letter-spacing:2px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:12px;">INVITE UN AMI</div>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px;">Partage l'URL de l'app — ton ami peut créer un compte gratuit et commencer son propre test de placement.</p>
+        <button class="btn-validate" onclick="copyUrl()">🔗 Copier le lien de l'app</button>
+      </div>
+    </div>`;
+}
+
+function copyShareText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('✓ Texte copié !', 'success'));
+}
+function nativeShare(text) {
+  navigator.share({ title: 'Fluent — Sharp your English', text }).catch(()=>{});
+}
+function copyUrl() {
+  navigator.clipboard.writeText(window.location.href).then(() => showToast('✓ Lien copié !', 'success'));
+}
+
+// ══ NAVIGATION ══
+function switchMode(mode) {
+  state.mode = mode;
+  if (state.sprintTimer && mode !== 'sprint') { clearInterval(state.sprintTimer); state.sprintRunning = false; }
+
+  // Update big mode buttons
+  document.querySelectorAll('.mode-btn').forEach((b, i) => {
+    const modes = ['flashcard','qcm','dictee','saisie','sprint','retour'];
+    b.classList.toggle('active', modes[i] === mode);
+  });
+
+  // Update bottom nav
+  document.getElementById('btn-stats')?.classList.toggle('active', mode === 'stats');
+  document.getElementById('btn-partager')?.classList.toggle('active', mode === 'partager');
+  document.getElementById('btn-profil')?.classList.toggle('active', mode === 'profil');
+
+  // Hide level filters for stats/profil
+  const filters = document.getElementById('level-filters');
+  if (filters) filters.style.display = (mode === 'stats' || mode === 'profil') ? 'none' : 'flex';
+
+  if (mode !== 'sprint' && mode !== 'stats' && mode !== 'profil') buildQueue(mode);
+  state.sprintRunning = false;
+  render();
+}
+
+function setLevel(level) {
+  if (state.accessibleLevels.length > 0 && level !== 'ALL' && !state.accessibleLevels.includes(level)) return;
+  state.level = level;
+  const allBtn = document.getElementById('lvl-ALL');
+  if (allBtn) {
+    allBtn.classList.toggle('active', level === 'ALL');
+    allBtn.style.background = level === 'ALL' ? 'var(--ocean)' : 'var(--surface)';
+    allBtn.style.color = level === 'ALL' ? '#fff' : 'var(--muted)';
+  }
+  updateLevelButtons();
+  buildQueue();
+  render();
+}
+
+function nextWord() {
+  state.currentIdx++;
+  state.revealed = false;
+  state.qcmAnswered = false;
+  if (state.currentIdx >= state.queue.length) buildQueue();
+  render();
+}
+
+// ══ UTILS ══
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+}
+
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function esc(s) { return (s||'').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+// ══ AUTO LOGIN ══
+(async () => {
+  const saved = localStorage.getItem('wf_user');
+  if (saved) {
+    const u = JSON.parse(saved);
+    if (!u.isGuest) { state.user = u; await startApp(false); }
+  }
+})();
+</script>
+
+</body>
+</html>
