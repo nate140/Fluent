@@ -847,70 +847,151 @@ function updateStreakBadge() {
   el.className = 'streak-badge' + (state.streak === 0 ? ' zero' : '');
 }
 
-// ══ PLACEMENT TEST (40 questions) ══
+// ══ PLACEMENT TEST — banque de 120 questions (24 par niveau) ══
+// À chaque session, 8 questions par niveau sont tirées aléatoirement → 40 questions uniques
 const TEST_BANK = [
-  // A1 (10 questions)
-  { w:'house',   t:'maison',     l:'A1', opts:['maison','chien','voiture','pain'] },
-  { w:'happy',   t:'heureux',    l:'A1', opts:['triste','heureux','grand','rouge'] },
-  { w:'water',   t:'eau',        l:'A1', opts:['eau','feu','pain','air'] },
-  { w:'book',    t:'livre',      l:'A1', opts:['stylo','table','livre','chaise'] },
-  { w:'friend',  t:'ami',        l:'A1', opts:['ennemi','ami','frère','voisin'] },
-  { w:'eat',     t:'manger',     l:'A1', opts:['boire','manger','dormir','courir'] },
-  { w:'big',     t:'grand',      l:'A1', opts:['petit','vieux','grand','rapide'] },
-  { w:'school',  t:'école',      l:'A1', opts:['école','bureau','hôpital','magasin'] },
-  { w:'mother',  t:'mère',       l:'A1', opts:['père','sœur','mère','fille'] },
-  { w:'good',    t:'bon / bien', l:'A1', opts:['mauvais','bon / bien','vieux','nouveau'] },
-  // A2 (10 questions)
-  { w:'travel',  t:'voyager',    l:'A2', opts:['chanter','voyager','manger','dormir'] },
-  { w:'weather', t:'météo',      l:'A2', opts:['météo','argent','famille','travail'] },
-  { w:'explain', t:'expliquer',  l:'A2', opts:['expliquer','oublier','chercher','trouver'] },
-  { w:'choose',  t:'choisir',    l:'A2', opts:['perdre','choisir','vendre','porter'] },
-  { w:'answer',  t:'réponse',    l:'A2', opts:['question','réponse','problème','résultat'] },
-  { w:'sometimes',t:'parfois',   l:'A2', opts:['toujours','jamais','parfois','souvent'] },
-  { w:'problem', t:'problème',   l:'A2', opts:['solution','réponse','problème','avantage'] },
-  { w:'important',t:'important', l:'A2', opts:['facile','impossible','important','inutile'] },
-  { w:'remember',t:'se souvenir',l:'A2', opts:['oublier','se souvenir','apprendre','enseigner'] },
-  { w:'agree',   t:'être d\'accord',l:'A2', opts:['refuser','hésiter','être d\'accord','ignorer'] },
-  // B1 (10 questions)
-  { w:'achieve', t:'atteindre',  l:'B1', opts:['atteindre','oublier','chercher','perdre'] },
-  { w:'despite', t:'malgré',     l:'B1', opts:['depuis','malgré','pendant','grâce à'] },
-  { w:'improve', t:'améliorer',  l:'B1', opts:['améliorer','aggraver','changer','ignorer'] },
-  { w:'evidence',t:'preuve',     l:'B1', opts:['preuve','opinion','idée','théorie'] },
-  { w:'require', t:'exiger',     l:'B1', opts:['proposer','exiger','suggérer','refuser'] },
-  { w:'challenge',t:'défi',      l:'B1', opts:['avantage','problème','défi','solution'] },
-  { w:'encourage',t:'encourager',l:'B1', opts:['décourager','encourager','obliger','interdire'] },
-  { w:'involve', t:'impliquer',  l:'B1', opts:['exclure','impliquer','ignorer','rejeter'] },
-  { w:'reduce',  t:'réduire',    l:'B1', opts:['augmenter','réduire','maintenir','créer'] },
-  { w:'consider',t:'considérer', l:'B1', opts:['ignorer','refuser','considérer','oublier'] },
-  // B2 (5 questions)
-  { w:'emphasize',t:'souligner', l:'B2', opts:['souligner','traduire','organiser','supprimer'] },
-  { w:'resilient',t:'résilient', l:'B2', opts:['résilient','fragile','logique','créatif'] },
-  { w:'ambiguous',t:'ambigu',    l:'B2', opts:['clair','précis','ambigu','simple'] },
-  { w:'scrutinize',t:'examiner attentivement',l:'B2', opts:['examiner attentivement','ignorer','simplifier','résumer'] },
-  { w:'advocate', t:'défenseur / préconiser',l:'B2', opts:['opposant','défenseur / préconiser','observateur','critique'] },
-  // C1 (5 questions)
-  { w:'pragmatic',t:'pragmatique',l:'C1', opts:['pragmatique','symbolique','rhétorique','empirique'] },
-  { w:'hegemony', t:'hégémonie', l:'C1', opts:['démocratie','hégémonie','anarchie','fédéralisme'] },
-  { w:'meticulous',t:'méticuleux',l:'C1', opts:['négligent','méticuleux','ambitieux','créatif'] },
-  { w:'mitigate', t:'atténuer',  l:'C1', opts:['atténuer','aggraver','ignorer','amplifier'] },
-  { w:'eloquent', t:'éloquent',  l:'C1', opts:['silencieux','éloquent','hésitant','confus'] },
+  // ── A1 (24 questions) ──
+  { w:'house',    t:'maison',      l:'A1', opts:['maison','chien','voiture','pain'] },
+  { w:'happy',    t:'heureux',     l:'A1', opts:['triste','heureux','grand','rouge'] },
+  { w:'water',    t:'eau',         l:'A1', opts:['eau','feu','pain','air'] },
+  { w:'book',     t:'livre',       l:'A1', opts:['stylo','table','livre','chaise'] },
+  { w:'friend',   t:'ami',         l:'A1', opts:['ennemi','ami','frère','voisin'] },
+  { w:'eat',      t:'manger',      l:'A1', opts:['boire','manger','dormir','courir'] },
+  { w:'big',      t:'grand',       l:'A1', opts:['petit','vieux','grand','rapide'] },
+  { w:'school',   t:'école',       l:'A1', opts:['école','bureau','hôpital','magasin'] },
+  { w:'mother',   t:'mère',        l:'A1', opts:['père','sœur','mère','fille'] },
+  { w:'good',     t:'bon / bien',  l:'A1', opts:['mauvais','bon / bien','vieux','nouveau'] },
+  { w:'cat',      t:'chat',        l:'A1', opts:['chien','chat','oiseau','poisson'] },
+  { w:'sun',      t:'soleil',      l:'A1', opts:['lune','étoile','soleil','nuage'] },
+  { w:'run',      t:'courir',      l:'A1', opts:['marcher','nager','courir','sauter'] },
+  { w:'red',      t:'rouge',       l:'A1', opts:['bleu','vert','rouge','jaune'] },
+  { w:'one',      t:'un',          l:'A1', opts:['deux','trois','un','quatre'] },
+  { w:'door',     t:'porte',       l:'A1', opts:['fenêtre','mur','porte','toit'] },
+  { w:'boy',      t:'garçon',      l:'A1', opts:['fille','homme','garçon','enfant'] },
+  { w:'car',      t:'voiture',     l:'A1', opts:['vélo','bus','voiture','train'] },
+  { w:'sleep',    t:'dormir',      l:'A1', opts:['manger','boire','dormir','jouer'] },
+  { w:'cold',     t:'froid',       l:'A1', opts:['chaud','froid','rapide','lent'] },
+  { w:'open',     t:'ouvrir',      l:'A1', opts:['fermer','ouvrir','casser','perdre'] },
+  { w:'name',     t:'nom',         l:'A1', opts:['prénom','nom','adresse','âge'] },
+  { w:'day',      t:'jour',        l:'A1', opts:['nuit','semaine','jour','mois'] },
+  { w:'yes',      t:'oui',         l:'A1', opts:['non','oui','peut-être','jamais'] },
+  // ── A2 (24 questions) ──
+  { w:'travel',   t:'voyager',     l:'A2', opts:['chanter','voyager','manger','dormir'] },
+  { w:'weather',  t:'météo',       l:'A2', opts:['météo','argent','famille','travail'] },
+  { w:'explain',  t:'expliquer',   l:'A2', opts:['expliquer','oublier','chercher','trouver'] },
+  { w:'choose',   t:'choisir',     l:'A2', opts:['perdre','choisir','vendre','porter'] },
+  { w:'answer',   t:'réponse',     l:'A2', opts:['question','réponse','problème','résultat'] },
+  { w:'sometimes',t:'parfois',     l:'A2', opts:['toujours','jamais','parfois','souvent'] },
+  { w:'problem',  t:'problème',    l:'A2', opts:['solution','réponse','problème','avantage'] },
+  { w:'important',t:'important',   l:'A2', opts:['facile','impossible','important','inutile'] },
+  { w:'remember', t:'se souvenir', l:'A2', opts:['oublier','se souvenir','apprendre','enseigner'] },
+  { w:'agree',    t:'être d\'accord',l:'A2',opts:['refuser','hésiter','être d\'accord','ignorer'] },
+  { w:'bring',    t:'apporter',    l:'A2', opts:['apporter','prendre','laisser','envoyer'] },
+  { w:'clean',    t:'propre',      l:'A2', opts:['sale','propre','beau','neuf'] },
+  { w:'early',    t:'tôt',         l:'A2', opts:['tard','tôt','vite','loin'] },
+  { w:'happen',   t:'arriver / se passer', l:'A2', opts:['arriver / se passer','partir','rester','continuer'] },
+  { w:'enough',   t:'assez',       l:'A2', opts:['trop','peu','assez','beaucoup'] },
+  { w:'free',     t:'libre / gratuit', l:'A2', opts:['occupé','payant','libre / gratuit','interdit'] },
+  { w:'carry',    t:'porter',      l:'A2', opts:['lancer','porter','poser','tirer'] },
+  { w:'meet',     t:'rencontrer',  l:'A2', opts:['éviter','quitter','rencontrer','appeler'] },
+  { w:'borrow',   t:'emprunter',   l:'A2', opts:['prêter','emprunter','voler','acheter'] },
+  { w:'healthy',  t:'en bonne santé', l:'A2', opts:['malade','fatigué','en bonne santé','blessé'] },
+  { w:'invite',   t:'inviter',     l:'A2', opts:['refuser','inviter','ignorer','remercier'] },
+  { w:'busy',     t:'occupé',      l:'A2', opts:['libre','occupé','disponible','absent'] },
+  { w:'enjoy',    t:'apprécier / profiter de', l:'A2', opts:['détester','souffrir','apprécier / profiter de','éviter'] },
+  { w:'late',     t:'en retard / tard', l:'A2', opts:['tôt','à l\'heure','en retard / tard','en avance'] },
+  // ── B1 (24 questions) ──
+  { w:'achieve',  t:'atteindre',   l:'B1', opts:['atteindre','oublier','chercher','perdre'] },
+  { w:'despite',  t:'malgré',      l:'B1', opts:['depuis','malgré','pendant','grâce à'] },
+  { w:'improve',  t:'améliorer',   l:'B1', opts:['améliorer','aggraver','changer','ignorer'] },
+  { w:'evidence', t:'preuve',      l:'B1', opts:['preuve','opinion','idée','théorie'] },
+  { w:'require',  t:'exiger',      l:'B1', opts:['proposer','exiger','suggérer','refuser'] },
+  { w:'challenge',t:'défi',        l:'B1', opts:['avantage','problème','défi','solution'] },
+  { w:'encourage',t:'encourager',  l:'B1', opts:['décourager','encourager','obliger','interdire'] },
+  { w:'involve',  t:'impliquer',   l:'B1', opts:['exclure','impliquer','ignorer','rejeter'] },
+  { w:'reduce',   t:'réduire',     l:'B1', opts:['augmenter','réduire','maintenir','créer'] },
+  { w:'consider', t:'considérer',  l:'B1', opts:['ignorer','refuser','considérer','oublier'] },
+  { w:'aware',    t:'conscient',   l:'B1', opts:['ignorant','conscient','indifférent','surpris'] },
+  { w:'current',  t:'actuel',      l:'B1', opts:['ancien','futur','actuel','passé'] },
+  { w:'opportunity',t:'opportunité',l:'B1',opts:['obstacle','opportunité','problème','risque'] },
+  { w:'increase', t:'augmenter',   l:'B1', opts:['diminuer','augmenter','stabiliser','stopper'] },
+  { w:'connect',  t:'connecter / relier', l:'B1', opts:['séparer','connecter / relier','détruire','bloquer'] },
+  { w:'similar',  t:'similaire',   l:'B1', opts:['différent','opposé','similaire','contraire'] },
+  { w:'support',  t:'soutenir',    l:'B1', opts:['abandonner','soutenir','critiquer','ignorer'] },
+  { w:'depend',   t:'dépendre',    l:'B1', opts:['dépendre','décider','choisir','imposer'] },
+  { w:'provide',  t:'fournir',     l:'B1', opts:['retirer','fournir','demander','refuser'] },
+  { w:'manage',   t:'gérer / réussir à', l:'B1', opts:['échouer','abandonner','gérer / réussir à','perdre'] },
+  { w:'purpose',  t:'but / objectif', l:'B1', opts:['résultat','cause','but / objectif','effet'] },
+  { w:'mention',  t:'mentionner',  l:'B1', opts:['oublier','cacher','mentionner','nier'] },
+  { w:'effort',   t:'effort',      l:'B1', opts:['résultat','effort','succès','échec'] },
+  { w:'suggest',  t:'suggérer',    l:'B1', opts:['refuser','imposer','suggérer','interdire'] },
+  // ── B2 (24 questions) ──
+  { w:'emphasize',  t:'souligner',              l:'B2', opts:['souligner','traduire','organiser','supprimer'] },
+  { w:'resilient',  t:'résilient',              l:'B2', opts:['résilient','fragile','logique','créatif'] },
+  { w:'ambiguous',  t:'ambigu',                 l:'B2', opts:['clair','précis','ambigu','simple'] },
+  { w:'scrutinize', t:'examiner attentivement', l:'B2', opts:['examiner attentivement','ignorer','simplifier','résumer'] },
+  { w:'advocate',   t:'défenseur / préconiser', l:'B2', opts:['opposant','défenseur / préconiser','observateur','critique'] },
+  { w:'coherent',   t:'cohérent',               l:'B2', opts:['cohérent','confus','ambigu','contradictoire'] },
+  { w:'imply',      t:'sous-entendre',           l:'B2', opts:['affirmer','nier','sous-entendre','expliquer'] },
+  { w:'perceive',   t:'percevoir',               l:'B2', opts:['ignorer','percevoir','oublier','confondre'] },
+  { w:'substantial',t:'considérable',            l:'B2', opts:['minime','considérable','moyen','négligeable'] },
+  { w:'constraint', t:'contrainte',              l:'B2', opts:['liberté','contrainte','opportunité','avantage'] },
+  { w:'reluctant',  t:'réticent',                l:'B2', opts:['enthousiaste','réticent','indifférent','pressé'] },
+  { w:'authentic',  t:'authentique',             l:'B2', opts:['faux','authentique','ordinaire','commun'] },
+  { w:'persist',    t:'persister',               l:'B2', opts:['abandonner','persister','hésiter','renoncer'] },
+  { w:'assert',     t:'affirmer',                l:'B2', opts:['nier','douter','affirmer','ignorer'] },
+  { w:'convey',     t:'transmettre / exprimer',  l:'B2', opts:['cacher','transmettre / exprimer','perdre','bloquer'] },
+  { w:'inherent',   t:'inhérent',                l:'B2', opts:['externe','inhérent','artificiel','ajouté'] },
+  { w:'assumption', t:'hypothèse / supposition', l:'B2', opts:['certitude','preuve','hypothèse / supposition','démonstration'] },
+  { w:'versatile',  t:'polyvalent',              l:'B2', opts:['spécialisé','polyvalent','limité','rigide'] },
+  { w:'dilemma',    t:'dilemme',                 l:'B2', opts:['solution','choix facile','dilemme','certitude'] },
+  { w:'prevalent',  t:'répandu',                 l:'B2', opts:['rare','répandu','inconnu','discret'] },
+  { w:'concise',    t:'concis',                  l:'B2', opts:['long','vague','concis','détaillé'] },
+  { w:'refine',     t:'affiner / peaufiner',     l:'B2', opts:['détruire','ignorer','affiner / peaufiner','compliquer'] },
+  { w:'mutual',     t:'mutuel / réciproque',     l:'B2', opts:['unilatéral','mutuel / réciproque','imposé','indirect'] },
+  { w:'explicit',   t:'explicite',               l:'B2', opts:['implicite','explicit','vague','ambigu'] },
+  // ── C1 (24 questions) ──
+  { w:'pragmatic',   t:'pragmatique',             l:'C1', opts:['pragmatique','symbolique','rhétorique','empirique'] },
+  { w:'hegemony',    t:'hégémonie',               l:'C1', opts:['démocratie','hégémonie','anarchie','fédéralisme'] },
+  { w:'meticulous',  t:'méticuleux',              l:'C1', opts:['négligent','méticuleux','ambitieux','créatif'] },
+  { w:'mitigate',    t:'atténuer',                l:'C1', opts:['atténuer','aggraver','ignorer','amplifier'] },
+  { w:'eloquent',    t:'éloquent',                l:'C1', opts:['silencieux','éloquent','hésitant','confus'] },
+  { w:'nuance',      t:'nuance',                  l:'C1', opts:['nuance','généralité','exagération','simplification'] },
+  { w:'elicit',      t:'susciter / provoquer',    l:'C1', opts:['supprimer','susciter / provoquer','éviter','cacher'] },
+  { w:'paradigm',    t:'paradigme',               l:'C1', opts:['exception','paradigme','anomalie','détail'] },
+  { w:'substantiate',t:'étayer / prouver',        l:'C1', opts:['réfuter','étayer / prouver','minimiser','ignorer'] },
+  { w:'nascent',     t:'naissant / émergent',     l:'C1', opts:['déclinant','naissant / émergent','établi','disparu'] },
+  { w:'dichotomy',   t:'dichotomie',              l:'C1', opts:['harmonie','dichotomie','continuité','unité'] },
+  { w:'ostensibly',  t:'apparemment / en apparence', l:'C1', opts:['réellement','apparemment / en apparence','clairement','absolument'] },
+  { w:'reticent',    t:'peu communicatif / réservé', l:'C1', opts:['bavard','peu communicatif / réservé','expressif','spontané'] },
+  { w:'tenuous',     t:'ténu / fragile',          l:'C1', opts:['solide','évident','ténu / fragile','certain'] },
+  { w:'corroborate', t:'corroborer',              l:'C1', opts:['réfuter','corroborer','ignorer','contredire'] },
+  { w:'superfluous', t:'superflu',                l:'C1', opts:['essentiel','superflu','utile','indispensable'] },
+  { w:'alleviate',   t:'atténuer / soulager',     l:'C1', opts:['aggraver','atténuer / soulager','ignorer','amplifier'] },
+  { w:'culminate',   t:'culminer / aboutir',      l:'C1', opts:['débuter','culminer / aboutir','stagner','décliner'] },
+  { w:'pervasive',   t:'omniprésent / répandu',   l:'C1', opts:['rare','omniprésent / répandu','isolé','ponctuel'] },
+  { w:'ambivalent',  t:'ambivalent',              l:'C1', opts:['convaincu','ambivalent','indifférent','enthousiaste'] },
+  { w:'exacerbate',  t:'aggraver / exacerber',    l:'C1', opts:['améliorer','aggraver / exacerber','stabiliser','ignorer'] },
+  { w:'discern',     t:'discerner / percevoir',   l:'C1', opts:['confondre','discerner / percevoir','ignorer','inventer'] },
+  { w:'innate',      t:'inné',                    l:'C1', opts:['acquis','appris','inné','imposé'] },
+  { w:'brevity',     t:'brièveté / concision',    l:'C1', opts:['longueur','brièveté / concision','complexité','répétition'] },
 ];
+
 
 let testIdx = 0;
 let testScores = { A1:0, A2:0, B1:0, B2:0, C1:0 };
-let testMax = { A1:10, A2:10, B1:10, B2:5, C1:5 };
+let testMax = { A1:8, A2:8, B1:8, B2:8, C1:8 };
 let currentTestWord = null;
 
 function startPlacementTest() {
   showScreen('test');
   testIdx = 0;
   testScores = { A1:0, A2:0, B1:0, B2:0, C1:0 };
-  // Shuffle within each level group so test order is different every time
+  // Pick 8 random questions per level from the 24-question pool → 40 unique each time
   const byLevel = {};
   TEST_BANK.forEach(q => { if (!byLevel[q.l]) byLevel[q.l] = []; byLevel[q.l].push(q); });
   Object.keys(byLevel).forEach(l => shuffle(byLevel[l]));
-  // Also randomize the distractors order per question
-  TEST_BANK_SHUFFLED = ['A1','A2','B1','B2','C1'].flatMap(l => byLevel[l] || []);
+  TEST_BANK_SHUFFLED = ['A1','A2','B1','B2','C1'].flatMap(l => (byLevel[l] || []).slice(0, 8));
   renderTestWord();
 }
 
@@ -923,9 +1004,9 @@ function speakTestWord() {
 function renderTestWord() {
   const w = TEST_BANK_SHUFFLED[testIdx];
   currentTestWord = w.w;
-  const pct = (testIdx / TEST_BANK.length) * 100;
+  const pct = (testIdx / TEST_BANK_SHUFFLED.length) * 100;
   document.getElementById('test-progress-fill').style.width = pct + '%';
-  document.getElementById('test-progress-label').textContent = (testIdx + 1) + ' / ' + TEST_BANK.length;
+  document.getElementById('test-progress-label').textContent = (testIdx + 1) + ' / ' + TEST_BANK_SHUFFLED.length;
   document.getElementById('test-level-label').textContent = 'Niveau testé : ' + w.l;
   document.getElementById('test-word').textContent = w.w;
   document.getElementById('test-word-level').textContent = w.l;
@@ -1354,7 +1435,7 @@ function renderProfil() {
         <div class="profil-name">${state.user?.code || '—'}</div>
         <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
           <div class="profil-level-badge" style="margin-bottom:0;">${lvl !== '?' ? 'Niveau ' + lvl : 'Niveau non défini'}</div>
-          ${lvl === '?' ? `<button onclick="startPlacementTest()" style="background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:6px 16px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">🎯 Tester mon niveau</button>` : ''}
+          <button onclick="startPlacementTest()" style="background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:6px 16px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">🎯 ${lvl === '?' ? 'Tester mon niveau' : 'Refaire le test'}</button>
         </div>
         <div class="profil-stats-row">
           <div class="profil-stat"><div class="profil-stat-num">${totalValidated}</div><div class="profil-stat-label">Mots validés</div></div>
